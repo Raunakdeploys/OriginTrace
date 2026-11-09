@@ -57,10 +57,21 @@ if (rawApiKey && rawApiKey !== 'MY_GEMINI_API_KEY' && rawApiKey !== '""') {
         }
       }
     });
+    console.log('[ORIGINTRACE] Gemini GenAI client initialized successfully.');
   } catch (err) {
     console.warn('[ORIGINTRACE] Gemini API initialization deferred:', err);
   }
 }
+
+// Live Threat Intelligence Configuration
+const vtApiKey = (process.env.VIRUSTOTAL_API_KEY || process.env.PG_VT_API_KEY || '').trim();
+const gsbApiKey = (process.env.GOOGLE_SAFE_BROWSING_API_KEY || process.env.SAFE_BROWSING_API_KEY || process.env.PG_GSB_API_KEY || '').trim();
+const appEnvironment = process.env.APP_ENV || process.env.ENV || 'development';
+const databaseUrl = process.env.DATABASE_URL || 'sqlite:///./database.db';
+
+console.log(`[ORIGINTRACE] Active Environment: ${appEnvironment}`);
+console.log(`[ORIGINTRACE] Threat Intel Status: VirusTotal [${vtApiKey ? 'ONLINE' : 'OFFLINE'}], Google Safe Browsing [${gsbApiKey ? 'ONLINE' : 'OFFLINE'}], Gemini [${genaiClient ? 'ONLINE' : 'OFFLINE'}]`);
+
 
 // -----------------------------------------------------------------------------
 // SSRF Protection Utilities
@@ -334,12 +345,169 @@ function computeReportFingerprint(reportData: any): string {
 // API Endpoints
 // -----------------------------------------------------------------------------
 
+// -----------------------------------------------------------------------------
+// Live Threat Intelligence Lookups (VirusTotal v3 & Google Safe Browsing v4)
+// -----------------------------------------------------------------------------
+
+interface VirusTotalResult {
+  available: boolean;
+  malicious: number;
+  suspicious: number;
+  harmless: number;
+  undetected: number;
+  reputation: number;
+  categories?: Record<string, string>;
+  permalink?: string;
+  source: string;
+}
+
+async function checkVirusTotal(target: string, isUrl = false): Promise<VirusTotalResult | null> {
+  const key = (process.env.VIRUSTOTAL_API_KEY || process.env.PG_VT_API_KEY || '').trim();
+  if (!key || key === '""') return null;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+
+    let endpoint = '';
+    if (isUrl) {
+      const urlId = Buffer.from(target).toString('base64').replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
+      endpoint = `https://www.virustotal.com/api/v3/urls/${urlId}`;
+    } else {
+      endpoint = `https://www.virustotal.com/api/v3/domains/${encodeURIComponent(target.toLowerCase())}`;
+    }
+
+    const res = await fetch(endpoint, {
+      method: 'GET',
+      headers: {
+        'x-apikey': key,
+        'Accept': 'application/json'
+      },
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (res.status === 404 && isUrl) {
+      try {
+        const parsed = new URL(target.startsWith('http') ? target : `https://${target}`);
+        return await checkVirusTotal(parsed.hostname, false);
+      } catch {
+        return null;
+      }
+    }
+
+    if (!res.ok) {
+      console.warn(`[ORIGINTRACE] VirusTotal API returned status ${res.status}`);
+      return null;
+    }
+
+    const json: any = await res.json();
+    const stats = json?.data?.attributes?.last_analysis_stats || {
+      malicious: 0,
+      suspicious: 0,
+      harmless: 0,
+      undetected: 0
+    };
+
+    return {
+      available: true,
+      malicious: stats.malicious || 0,
+      suspicious: stats.suspicious || 0,
+      harmless: stats.harmless || 0,
+      undetected: stats.undetected || 0,
+      reputation: json?.data?.attributes?.reputation || 0,
+      categories: json?.data?.attributes?.categories || {},
+      permalink: json?.data?.links?.self,
+      source: 'VirusTotal v3 Global Intelligence'
+    };
+  } catch (err: any) {
+    console.warn('[ORIGINTRACE] VirusTotal query timed out or errored:', err.message);
+    return null;
+  }
+}
+
+interface SafeBrowsingResult {
+  isThreat: boolean;
+  matches: Array<{
+    threatType: string;
+    platformType: string;
+    threatUrl: string;
+  }>;
+  source: string;
+}
+
+async function checkGoogleSafeBrowsing(urlOrDomain: string): Promise<SafeBrowsingResult | null> {
+  const key = (process.env.GOOGLE_SAFE_BROWSING_API_KEY || process.env.SAFE_BROWSING_API_KEY || process.env.PG_GSB_API_KEY || '').trim();
+  if (!key || key === '""') return null;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 6000);
+
+    const testUrl = urlOrDomain.startsWith('http') ? urlOrDomain : `https://${urlOrDomain}/`;
+    const payload = {
+      client: {
+        clientId: 'origintrace-guardian',
+        clientVersion: '1.0.0'
+      },
+      threatInfo: {
+        threatTypes: [
+          'MALWARE',
+          'SOCIAL_ENGINEERING',
+          'UNWANTED_SOFTWARE',
+          'POTENTIALLY_HARMFUL_APPLICATION'
+        ],
+        platformTypes: ['ANY_PLATFORM'],
+        threatEntryTypes: ['URL'],
+        threatEntries: [
+          { url: testUrl }
+        ]
+      }
+    };
+
+    const res = await fetch(`https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${key}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload),
+      signal: controller.signal
+    });
+    clearTimeout(timeout);
+
+    if (!res.ok) {
+      console.warn(`[ORIGINTRACE] Google Safe Browsing API returned status ${res.status}`);
+      return null;
+    }
+
+    const data: any = await res.json();
+    const rawMatches = data.matches || [];
+
+    return {
+      isThreat: rawMatches.length > 0,
+      matches: rawMatches.map((m: any) => ({
+        threatType: m.threatType,
+        platformType: m.platformType,
+        threatUrl: m.threat?.url || testUrl
+      })),
+      source: 'Google Safe Browsing v4 Threat List'
+    };
+  } catch (err: any) {
+    console.warn('[ORIGINTRACE] Google Safe Browsing query timed out or errored:', err.message);
+    return null;
+  }
+}
+
 // Health check
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
     status: 'healthy',
     engine: 'ORIGINTRACE-Unified-v1.0',
+    env: appEnvironment,
     gemini_connected: Boolean(genaiClient),
+    virustotal_configured: Boolean(vtApiKey),
+    safe_browsing_configured: Boolean(gsbApiKey),
+    database_configured: Boolean(databaseUrl),
     ssrf_protection: 'active',
     evm_registry: 'active'
   });
@@ -651,6 +819,115 @@ app.post('/api/investigate/url', async (req: Request, res: Response) => {
     });
   }
 
+  // 6. Live Threat Intelligence Feeds (VirusTotal v3 & Google Safe Browsing v4)
+  const [vtResult, gsbResult] = await Promise.all([
+    checkVirusTotal(hostname, false),
+    checkGoogleSafeBrowsing(urlObj.href)
+  ]);
+
+  // Handle VirusTotal Threat Telemetry
+  if (vtResult && vtResult.available) {
+    if (vtResult.malicious > 0 || vtResult.suspicious > 0) {
+      const isSevere = vtResult.malicious >= 3;
+      const scoreAdd = Math.min(50, vtResult.malicious * 15 + vtResult.suspicious * 5);
+      riskScore += scoreAdd;
+
+      checks.push({
+        id: `CHK-VT-${Date.now()}`,
+        module: 'reputation',
+        title: 'VirusTotal Threat Intelligence Flag',
+        finding: `${vtResult.malicious} security vendor(s) flagged this target as malicious (${vtResult.suspicious} suspicious) out of ${vtResult.malicious + vtResult.suspicious + vtResult.harmless + vtResult.undetected} engines.`,
+        severity: isSevere ? 'critical' : 'high',
+        status: 'failed',
+        scoreImpact: scoreAdd,
+        evidence: [
+          { key: 'Malicious Engines', value: vtResult.malicious },
+          { key: 'Suspicious Engines', value: vtResult.suspicious },
+          { key: 'Harmless Engines', value: vtResult.harmless },
+          { key: 'Reputation Score', value: vtResult.reputation }
+        ],
+        source: 'VirusTotal-Threat-Engine'
+      });
+
+      nodes.push({
+        id: `vt_${hostname}`,
+        label: `VirusTotal: ${vtResult.malicious} Malicious Flags`,
+        type: 'indicator',
+        severity: isSevere ? 'critical' : 'high'
+      });
+
+      edges.push({
+        id: `edge_vt_${Date.now()}`,
+        source: `domain_${hostname}`,
+        target: `vt_${hostname}`,
+        relationship: 'flagged_by',
+        evidenceSource: 'VirusTotal v3 Threat Intelligence API'
+      });
+    } else {
+      checks.push({
+        id: `CHK-VT-${Date.now()}`,
+        module: 'reputation',
+        title: 'VirusTotal Consensus: Clean / Harmless',
+        finding: `Evaluated across ${vtResult.harmless + vtResult.undetected} security intelligence vendors with 0 malicious flags.`,
+        severity: 'info',
+        status: 'passed',
+        scoreImpact: -5,
+        evidence: [
+          { key: 'Harmless Engines', value: vtResult.harmless },
+          { key: 'Undetected Engines', value: vtResult.undetected },
+          { key: 'Community Reputation', value: vtResult.reputation }
+        ],
+        source: 'VirusTotal-Threat-Engine'
+      });
+    }
+  }
+
+  // Handle Google Safe Browsing Telemetry
+  if (gsbResult) {
+    if (gsbResult.isThreat) {
+      riskScore += 50;
+      const threatTypes = gsbResult.matches.map(m => m.threatType).join(', ');
+      checks.push({
+        id: `CHK-GSB-${Date.now()}`,
+        module: 'reputation',
+        title: 'Google Safe Browsing Confirmed Threat Signature',
+        finding: `Target URL is blacklisted by Google Safe Browsing as: ${threatTypes}. End-user access should be quarantined immediately.`,
+        severity: 'critical',
+        status: 'failed',
+        scoreImpact: 50,
+        evidence: gsbResult.matches.map(m => ({ key: m.threatType, value: m.threatUrl })),
+        source: 'Google-Safe-Browsing-API'
+      });
+
+      nodes.push({
+        id: `gsb_${hostname}`,
+        label: `Google Safe Browsing: ${threatTypes}`,
+        type: 'indicator',
+        severity: 'critical'
+      });
+
+      edges.push({
+        id: `edge_gsb_${Date.now()}`,
+        source: `domain_${hostname}`,
+        target: `gsb_${hostname}`,
+        relationship: 'blacklisted_by',
+        evidenceSource: 'Google Safe Browsing v4 Threat List'
+      });
+    } else {
+      checks.push({
+        id: `CHK-GSB-${Date.now()}`,
+        module: 'reputation',
+        title: 'Google Safe Browsing Status Clean',
+        finding: 'No active malware, phishing, or social engineering listings found in Google Safe Browsing threat databases.',
+        severity: 'info',
+        status: 'passed',
+        scoreImpact: 0,
+        evidence: [{ key: 'Threat Status', value: 'Clean / Unlisted' }],
+        source: 'Google-Safe-Browsing-API'
+      });
+    }
+  }
+
   // Calculate Verdict Classification
   riskScore = Math.min(100, Math.max(0, riskScore));
   let classification: VerdictClassification = 'LOW RISK';
@@ -658,7 +935,11 @@ app.post('/api/investigate/url', async (req: Request, res: Response) => {
   else if (riskScore >= 45) classification = 'SUSPICIOUS';
   else if (riskScore > 20) classification = 'LOW RISK';
 
-  if (typosquat.isTyposquat && riskScore >= 75) {
+  if (
+    (gsbResult?.isThreat) ||
+    (vtResult && vtResult.malicious >= 3) ||
+    (typosquat.isTyposquat && riskScore >= 75)
+  ) {
     classification = 'CONFIRMED MALICIOUS';
   }
 
@@ -973,6 +1254,51 @@ ${content.slice(0, 4000)}
   }
 
   if (aiAnalysis.extracted_indicators?.length > 0) {
+    // Cross-validate extracted URLs against live threat intelligence
+    const extractedUrls = aiAnalysis.extracted_indicators.filter((ind: any) => ind.type === 'url' || ind.type === 'domain');
+    if (extractedUrls.length > 0) {
+      const primaryUrl = extractedUrls[0].value;
+      const [linkGsb, linkVt] = await Promise.all([
+        checkGoogleSafeBrowsing(primaryUrl),
+        checkVirusTotal(primaryUrl, primaryUrl.startsWith('http'))
+      ]);
+
+      if (linkGsb?.isThreat) {
+        aiAnalysis.risk_score = Math.max(aiAnalysis.risk_score, 95);
+        aiAnalysis.classification = 'CONFIRMED MALICIOUS';
+        checks.push({
+          id: `CHK-MSG-GSB-${Date.now()}`,
+          module: 'reputation',
+          title: 'Embedded Link Flagged by Google Safe Browsing',
+          finding: `Extracted URL '${primaryUrl}' matches confirmed threat signatures: ${linkGsb.matches.map(m => m.threatType).join(', ')}.`,
+          severity: 'critical',
+          status: 'failed',
+          scoreImpact: 50,
+          evidence: linkGsb.matches.map(m => ({ key: m.threatType, value: m.threatUrl })),
+          source: 'Google-Safe-Browsing-API'
+        });
+      }
+
+      if (linkVt && linkVt.malicious > 0) {
+        aiAnalysis.risk_score = Math.max(aiAnalysis.risk_score, 90);
+        aiAnalysis.classification = 'CONFIRMED MALICIOUS';
+        checks.push({
+          id: `CHK-MSG-VT-${Date.now()}`,
+          module: 'reputation',
+          title: 'Embedded Link Flagged by VirusTotal Intelligence',
+          finding: `${linkVt.malicious} security vendor(s) identified '${primaryUrl}' as malicious on VirusTotal.`,
+          severity: 'critical',
+          status: 'failed',
+          scoreImpact: 40,
+          evidence: [
+            { key: 'Malicious Vendors', value: linkVt.malicious },
+            { key: 'Suspicious Vendors', value: linkVt.suspicious }
+          ],
+          source: 'VirusTotal-Threat-Engine'
+        });
+      }
+    }
+
     for (const ind of aiAnalysis.extracted_indicators) {
       indicators.push({
         type: ind.type,

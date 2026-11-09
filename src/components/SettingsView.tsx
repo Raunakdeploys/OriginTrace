@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Settings, 
   ShieldCheck, 
@@ -8,10 +8,33 @@ import {
   AlertCircle,
   FileText,
   Lock,
-  Server
+  Server,
+  Activity,
+  Radio
 } from 'lucide-react';
 
+interface HealthData {
+  status: string;
+  engine: string;
+  env: string;
+  gemini_connected: boolean;
+  virustotal_configured: boolean;
+  safe_browsing_configured: boolean;
+  database_configured: boolean;
+  ssrf_protection: string;
+  evm_registry: string;
+}
+
 export const SettingsView: React.FC = () => {
+  const [health, setHealth] = useState<HealthData | null>(null);
+
+  useEffect(() => {
+    fetch('/api/health')
+      .then(res => res.json())
+      .then(data => setHealth(data))
+      .catch(err => console.warn('Health check error:', err));
+  }, []);
+
   return (
     <div className="flex-1 overflow-y-auto p-8 space-y-8 max-w-5xl mx-auto">
       {/* Header */}
@@ -23,8 +46,63 @@ export const SettingsView: React.FC = () => {
           Engine Settings & Security Architecture
         </h1>
         <p className="text-sm text-slate-400 max-w-2xl leading-relaxed">
-          Review SSRF security perimeter rules, server-side AI model configurations, local EVM state contracts, and upstream open-source attributions.
+          Review SSRF security perimeter rules, live threat intelligence integrations, server-side AI model configurations, and local EVM state contracts.
         </p>
+      </div>
+
+      {/* Live Threat Intelligence Status */}
+      <div className="p-6 rounded-lg bg-slate-900 border border-slate-800 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm font-semibold text-slate-200 uppercase tracking-wide">
+            <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
+            <span>Live Threat Intelligence Integrations</span>
+          </div>
+          <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            ENV: {health?.env || 'development'}
+          </span>
+        </div>
+
+        <p className="text-xs text-slate-400 leading-relaxed">
+          All external threat APIs are secured behind server-side proxy routes with zero client exposure. Keys are validated and loaded via root <code className="text-cyan-300 font-mono">.env</code>.
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
+          <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">VIRUSTOTAL v3</span>
+              {health?.virustotal_configured ? (
+                <span className="text-emerald-400 flex items-center gap-1 text-[10px]"><CheckCircle2 className="w-3 h-3" /> ONLINE</span>
+              ) : (
+                <span className="text-amber-400 text-[10px]">STANDBY</span>
+              )}
+            </div>
+            <div className="text-slate-300 text-[11px]">Global malware & vendor consensus</div>
+          </div>
+
+          <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">SAFE BROWSING v4</span>
+              {health?.safe_browsing_configured ? (
+                <span className="text-emerald-400 flex items-center gap-1 text-[10px]"><CheckCircle2 className="w-3 h-3" /> ONLINE</span>
+              ) : (
+                <span className="text-amber-400 text-[10px]">STANDBY</span>
+              )}
+            </div>
+            <div className="text-slate-300 text-[11px]">Google phishing & malware blacklist</div>
+          </div>
+
+          <div className="p-3 bg-slate-950 rounded border border-slate-800 space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-500">GEMINI 3.8 FLASH</span>
+              {health?.gemini_connected ? (
+                <span className="text-emerald-400 flex items-center gap-1 text-[10px]"><CheckCircle2 className="w-3 h-3" /> ONLINE</span>
+              ) : (
+                <span className="text-amber-400 text-[10px]">STANDBY</span>
+              )}
+            </div>
+            <div className="text-slate-300 text-[11px]">Autonomous social engineering analyzer</div>
+          </div>
+        </div>
       </div>
 
       {/* Security Perimeter Box */}
