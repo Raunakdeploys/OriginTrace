@@ -1,0 +1,8 @@
+# url.vet robots.txt
+
+User-agent: *
+Disallow: /admin
+Disallow: /admin/
+Disallow: /?q=%7Bsearch_term_string%7D
+
+Sitemap: https://url.vet/sitemap.xml

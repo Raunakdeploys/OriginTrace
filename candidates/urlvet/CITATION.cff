@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this software in academic work, please cite it as below."
+title: "url.vet: Phishing Detection"
+type: software
+authors:
+  - family-names: K P
+    given-names: Abhishek
+repository-code: "https://github.com/urlvet/urlvet"
+url: "https://github.com/urlvet/urlvet"
+license: AGPL-3.0
+keywords:
+  - phishing-detection
+  - cybersecurity
+  - machine-learning
+  - web-security
+abstract: >
+  url.vet (previously known as SafeSurf; pronounce "U-R-L dot vet") is an open-source phishing domain detection
+  system that analyzes URLs to identify malicious websites.
+  The project is intended for research, educational, and defensive security use.
+preferred-citation:
+  type: software
+  authors:
+    - family-names: K P
+      given-names: Abhishek
+  title: "url.vet: Phishing Detection"
+  year: 2021
+  url: "https://github.com/urlvet/urlvet"

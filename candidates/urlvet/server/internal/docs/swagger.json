@@ -1,0 +1,1819 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "URL safety analysis API. Checks phishing signals, redirects, TLS, DNS, brand mismatches, and more.",
+        "title": "url.vet API",
+        "contact": {},
+        "license": {
+            "name": "AGPL-3.0"
+        },
+        "version": "1.0"
+    },
+    "basePath": "/api/v1",
+    "paths": {
+        "/admin/cache": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "List all cache keys and values",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Flush all cache keys",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/cache/{key}": {
+            "delete": {
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Delete a single cache key",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Cache key",
+                        "name": "key",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/analyze": {
+            "get": {
+                "description": "Runs every check in parallel and returns one scored report. Most clients only need\nresult.verdict (Safe, Suspicious or Risky), result.final_score (0-100, higher is safer)\nand result.reasons. Checks still running after 15 seconds are dropped and named in\nincomplete_checks; incomplete is true when that could change the verdict. Complete\nresults are cached for 24 hours per URL; incomplete ones are not cached.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Analysis"
+                ],
+                "summary": "Full URL analysis",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to analyse (max 2048 chars)",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/analyzer.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/depth": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL"
+                ],
+                "summary": "URL depth check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/domain-info": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DNS"
+                ],
+                "summary": "Domain WHOIS / RDAP info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL whose domain to look up",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Utility"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/hsts": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Security"
+                ],
+                "summary": "HSTS check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ip/check": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL"
+                ],
+                "summary": "IP address detection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/ip/resolve": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DNS"
+                ],
+                "summary": "DNS IP resolution",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL whose domain to resolve",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/length": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL"
+                ],
+                "summary": "URL length check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/lists/known-sites": {
+            "get": {
+                "description": "The 10,000 most popular sites, and the user-content hosts on them that still need checking. A host matches a site if it is the site or a subdomain of it.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Lists"
+                ],
+                "summary": "Well-known sites",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.KnownSitesResponse"
+                        }
+                    },
+                    "304": {
+                        "description": "Not Modified"
+                    }
+                }
+            }
+        },
+        "/lists/threats": {
+            "get": {
+                "description": "Known phishing and malware links (PhishTank, URLhaus) as sorted SHA-256 prefixes of each link's normalized form: no scheme, lowercase host without \"www.\", no trailing slash or fragment, query kept. Clients hash a link the same way and look the prefix up locally, so nothing is sent. Supports If-None-Match.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Lists"
+                ],
+                "summary": "Hashed threat list",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ThreatListResponse"
+                        }
+                    },
+                    "304": {
+                        "description": "Not Modified"
+                    }
+                }
+            }
+        },
+        "/punycode": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL"
+                ],
+                "summary": "Punycode detection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rank": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "DNS"
+                ],
+                "summary": "Domain popularity rank",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL whose domain to rank",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/redirects": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Security"
+                ],
+                "summary": "Redirect chain analysis",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/checks.RedirectionResult"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/report": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Analysis"
+                ],
+                "summary": "Report an incorrect result",
+                "parameters": [
+                    {
+                        "description": "Report details",
+                        "name": "report",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.ReportRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/risky-tld": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL"
+                ],
+                "summary": "Risky TLD check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/status-code": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Security"
+                ],
+                "summary": "HTTP status code check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/trusted-tld": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL"
+                ],
+                "summary": "Trusted TLD check",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/url-shortener": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "URL"
+                ],
+                "summary": "URL shortener detection",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "URL to check",
+                        "name": "url",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "boolean"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "analyzer.Analysis": {
+            "type": "object",
+            "properties": {
+                "http_status": {
+                    "description": "RedirectionChain       []string   `json:\"redirection_chain\"`\nRedirectionChainLength int        `json:\"redirection_chain_length\"`\nRedirectionFinalURL    string     `json:\"redirection_final_url\"`",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/analyzer.HTTPStatus"
+                        }
+                    ]
+                },
+                "is_hsts_supported": {
+                    "type": "boolean"
+                },
+                "redirection_result": {
+                    "$ref": "#/definitions/checks.RedirectionResult"
+                }
+            }
+        },
+        "analyzer.Features": {
+            "type": "object",
+            "properties": {
+                "rank": {
+                    "type": "integer"
+                },
+                "tld": {
+                    "$ref": "#/definitions/analyzer.TLDInfo"
+                },
+                "url": {
+                    "$ref": "#/definitions/analyzer.URLChecks"
+                }
+            }
+        },
+        "analyzer.HTTPStatus": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "is_redirect": {
+                    "type": "boolean"
+                },
+                "success": {
+                    "type": "boolean"
+                },
+                "text": {
+                    "type": "string"
+                }
+            }
+        },
+        "analyzer.Infrastructure": {
+            "type": "object",
+            "properties": {
+                "ip_addresses": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "mx_hosts": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "mx_records_valid": {
+                    "type": "boolean"
+                },
+                "nameservers_valid": {
+                    "type": "boolean"
+                },
+                "ns_hosts": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "analyzer.Keywords": {
+            "type": "object",
+            "properties": {
+                "categories": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "found": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "has_keywords": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "analyzer.OriginFindings": {
+            "type": "object",
+            "properties": {
+                "bad_reasons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "confirmed": {
+                    "description": "Confirmed is set when a list names the link or a hop: the result is\nRisky, whatever the destination looks like.",
+                    "type": "boolean"
+                },
+                "risk": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "analyzer.Performance": {
+            "type": "object",
+            "properties": {
+                "timings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/analyzer.TimingEntry"
+                    }
+                },
+                "total_time": {
+                    "type": "string"
+                }
+            }
+        },
+        "analyzer.PhishingResult": {
+            "type": "object",
+            "properties": {
+                "from_cache": {
+                    "type": "boolean"
+                },
+                "in_database": {
+                    "type": "boolean"
+                },
+                "phish_detail_page": {
+                    "type": "string"
+                },
+                "phish_id": {
+                    "type": "integer"
+                },
+                "raw_response": {
+                    "type": "object"
+                },
+                "source": {
+                    "type": "string"
+                },
+                "target": {
+                    "type": "string"
+                },
+                "valid": {
+                    "type": "boolean"
+                },
+                "verified": {
+                    "type": "boolean"
+                },
+                "verified_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "analyzer.Reasons": {
+            "type": "object",
+            "properties": {
+                "bad_reasons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "good_reasons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "neutral_reasons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "analyzer.RedirectInfo": {
+            "type": "object",
+            "properties": {
+                "chain": {
+                    "description": "the redirect chain, starting with URL",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "target": {
+                    "description": "where it leads; the page the scan describes",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "the link as submitted",
+                    "type": "string"
+                }
+            }
+        },
+        "analyzer.Response": {
+            "type": "object",
+            "properties": {
+                "analysis": {
+                    "$ref": "#/definitions/analyzer.Analysis"
+                },
+                "content_data": {
+                    "$ref": "#/definitions/checks.PageFormResult"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "domain_info": {
+                    "$ref": "#/definitions/domaininfo.RegistrationData"
+                },
+                "domain_randomness": {
+                    "$ref": "#/definitions/checks.DomainRandomnessResult"
+                },
+                "errors": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "features": {
+                    "$ref": "#/definitions/analyzer.Features"
+                },
+                "incomplete": {
+                    "description": "Incomplete means signals are missing in a way that a rescan could fix, so\nthe result isn't cached. IncompleteChecks names every task that didn't\nfinish, including ones that don't make the result incomplete (a PhishTank\nrate limit), so the UI can say what wasn't checked.",
+                    "type": "boolean"
+                },
+                "incomplete_checks": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "infrastructure": {
+                    "$ref": "#/definitions/analyzer.Infrastructure"
+                },
+                "origin": {
+                    "description": "Origin is what the submitted link itself, and the hops after it, add to\nthat site's result: risk only, already counted in Result.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/analyzer.OriginFindings"
+                        }
+                    ]
+                },
+                "performance": {
+                    "$ref": "#/definitions/analyzer.Performance"
+                },
+                "phishing": {
+                    "$ref": "#/definitions/analyzer.PhishingResult"
+                },
+                "redirected_from": {
+                    "description": "RedirectedFrom is set when the submitted link sent visitors on to\nanother site; everything else describes that site.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/analyzer.RedirectInfo"
+                        }
+                    ]
+                },
+                "result": {
+                    "$ref": "#/definitions/analyzer.Result"
+                },
+                "safe_browsing": {
+                    "description": "SafeBrowsing is Google Safe Browsing's verdict; absent when it isn't configured.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/threatfeeds.GoogleThreatResult"
+                        }
+                    ]
+                },
+                "short_link": {
+                    "description": "ShortLink is set when the submitted link was on a URL shortener. When\nit resolved, everything else describes the page it leads to.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/analyzer.ShortLinkInfo"
+                        }
+                    ]
+                },
+                "ssl_info": {
+                    "$ref": "#/definitions/checks.SSLCertResult"
+                },
+                "threat_feeds": {
+                    "description": "ThreatFeeds is the match against locally held phishing and malware\nlists (PhishTank's dump, plus OpenPhish and URLhaus when enabled).",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/threatfeeds.FeedMatch"
+                        }
+                    ]
+                },
+                "tls_info": {
+                    "$ref": "#/definitions/checks.TLSResult"
+                },
+                "typosquat_result": {
+                    "$ref": "#/definitions/typosquat.TyposquatResult"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "web_risk": {
+                    "description": "WebRisk is Google Web Risk's verdict; absent when it isn't configured.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/threatfeeds.GoogleThreatResult"
+                        }
+                    ]
+                }
+            }
+        },
+        "analyzer.Result": {
+            "type": "object",
+            "properties": {
+                "final_score": {
+                    "type": "integer"
+                },
+                "reasons": {
+                    "$ref": "#/definitions/analyzer.Reasons"
+                },
+                "risk_score": {
+                    "type": "integer"
+                },
+                "trust_score": {
+                    "type": "integer"
+                },
+                "verdict": {
+                    "type": "string"
+                }
+            }
+        },
+        "analyzer.ShortLinkInfo": {
+            "type": "object",
+            "properties": {
+                "chain": {
+                    "description": "every link followed, starting with URL",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "resolved": {
+                    "description": "false: the destination couldn't be found",
+                    "type": "boolean"
+                },
+                "target": {
+                    "description": "where it leads; the page the scan describes",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "the short link as submitted",
+                    "type": "string"
+                }
+            }
+        },
+        "analyzer.TLDInfo": {
+            "type": "object",
+            "properties": {
+                "is_hosting_platform": {
+                    "type": "boolean"
+                },
+                "is_icann": {
+                    "type": "boolean"
+                },
+                "is_risky_tld": {
+                    "type": "boolean"
+                },
+                "is_trusted_tld": {
+                    "type": "boolean"
+                },
+                "tld": {
+                    "type": "string"
+                }
+            }
+        },
+        "analyzer.TimingEntry": {
+            "type": "object",
+            "properties": {
+                "task": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                }
+            }
+        },
+        "analyzer.URLChecks": {
+            "type": "object",
+            "properties": {
+                "contains_punycode": {
+                    "type": "boolean"
+                },
+                "has_homoglyph": {
+                    "type": "boolean"
+                },
+                "keywords": {
+                    "$ref": "#/definitions/analyzer.Keywords"
+                },
+                "subdomain_count": {
+                    "type": "integer"
+                },
+                "too_deep": {
+                    "type": "boolean"
+                },
+                "too_long": {
+                    "type": "boolean"
+                },
+                "url_shortener": {
+                    "type": "boolean"
+                },
+                "uses_ip": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "checks.BrandResult": {
+            "type": "object",
+            "properties": {
+                "brand_found": {
+                    "type": "string"
+                },
+                "detected_names": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "is_mismatch": {
+                    "type": "boolean"
+                },
+                "official_domain": {
+                    "description": "OfficialDomain is the brand's own site when the page claims to be a brand\nthis domain doesn't belong to, so the UI can point people to the real one.",
+                    "type": "string"
+                }
+            }
+        },
+        "checks.DomainRandomnessResult": {
+            "type": "object",
+            "properties": {
+                "bigramEnglishiness": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "digitRatio": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "entropy": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "entropyPerChar": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "isSuspicious": {
+                    "type": "boolean"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "length": {
+                    "type": "integer"
+                },
+                "longestConsonantRun": {
+                    "type": "integer"
+                },
+                "normalizedEntropy": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "randomnessScore": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "reasons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "uniqueCharRatio": {
+                    "type": "number",
+                    "format": "float64"
+                },
+                "vowelRatio": {
+                    "type": "number",
+                    "format": "float64"
+                }
+            }
+        },
+        "checks.FormInfo": {
+            "type": "object",
+            "properties": {
+                "action": {
+                    "description": "resolved absolute action URL (may be empty -\u003e current URL)",
+                    "type": "string"
+                },
+                "has_password": {
+                    "type": "boolean"
+                },
+                "has_payment": {
+                    "description": "credit card, money, etc.",
+                    "type": "boolean"
+                },
+                "has_personal": {
+                    "description": "address, phone, ssn, etc.",
+                    "type": "boolean"
+                },
+                "has_user_like": {
+                    "description": "username/email-like inputs",
+                    "type": "boolean"
+                },
+                "inputs": {
+                    "description": "raw input names/types/placeholder snippets",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "is_external": {
+                    "description": "action host != page host (true if external)",
+                    "type": "boolean"
+                },
+                "is_hidden": {
+                    "type": "boolean"
+                },
+                "login_intent": {
+                    "description": "button, label or action says sign in / next / verify",
+                    "type": "boolean"
+                },
+                "method": {
+                    "description": "GET/POST etc.",
+                    "type": "string"
+                },
+                "submit_texts": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "checks.IframeInfo": {
+            "type": "object",
+            "properties": {
+                "height": {
+                    "type": "string"
+                },
+                "is_hidden": {
+                    "type": "boolean"
+                },
+                "src": {
+                    "type": "string"
+                },
+                "width": {
+                    "type": "string"
+                }
+            }
+        },
+        "checks.PageFormResult": {
+            "type": "object",
+            "properties": {
+                "brand_check": {
+                    "$ref": "#/definitions/checks.BrandResult"
+                },
+                "content_type": {
+                    "description": "Set for responses that aren't web pages (installers, archives, images):\nthose aren't parsed, and FileName is what the download would be saved as.",
+                    "type": "string"
+                },
+                "fetch_duration": {
+                    "description": "nanoseconds",
+                    "type": "integer"
+                },
+                "file_name": {
+                    "type": "string"
+                },
+                "form_count": {
+                    "type": "integer"
+                },
+                "forms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/checks.FormInfo"
+                    }
+                },
+                "has_forms": {
+                    "type": "boolean"
+                },
+                "has_hidden_iframe": {
+                    "type": "boolean"
+                },
+                "has_login_form": {
+                    "type": "boolean"
+                },
+                "has_payment_form": {
+                    "type": "boolean"
+                },
+                "has_personal_form": {
+                    "type": "boolean"
+                },
+                "has_tracking": {
+                    "description": "detection of 1x1 pixels etc.",
+                    "type": "boolean"
+                },
+                "iframes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/checks.IframeInfo"
+                    }
+                },
+                "provider_block": {
+                    "description": "ProviderBlock is set when the page is the host's or CDN's own warning\nor takedown page instead of the site (Cloudflare's phishing interstitial).",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/checks.ProviderBlock"
+                        }
+                    ]
+                },
+                "script_redirect": {
+                    "$ref": "#/definitions/checks.ScriptRedirect"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "checks.ProviderBlock": {
+            "type": "object",
+            "properties": {
+                "provider": {
+                    "type": "string"
+                },
+                "reason": {
+                    "description": "\"phishing\", \"malware\" or \"blocked\"",
+                    "type": "string"
+                }
+            }
+        },
+        "checks.RedirectionResult": {
+            "type": "object",
+            "properties": {
+                "chain": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "chain_length": {
+                    "type": "integer"
+                },
+                "final_url": {
+                    "type": "string"
+                },
+                "final_url_domain": {
+                    "type": "string"
+                },
+                "has_domain_jump": {
+                    "type": "boolean"
+                },
+                "is_redirected": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "checks.SSLCertResult": {
+            "type": "object",
+            "properties": {
+                "ageDays": {
+                    "type": "integer"
+                },
+                "chainValid": {
+                    "type": "boolean"
+                },
+                "ctlogged": {
+                    "type": "boolean"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "fingerprint": {
+                    "type": "string"
+                },
+                "hasTLS": {
+                    "type": "boolean"
+                },
+                "isSuspicious": {
+                    "type": "boolean"
+                },
+                "issuer": {
+                    "type": "string"
+                },
+                "knownBadChain": {
+                    "type": "boolean"
+                },
+                "notAfter": {
+                    "type": "string"
+                },
+                "notBefore": {
+                    "type": "string"
+                },
+                "reasons": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "checks.ScriptRedirect": {
+            "type": "object",
+            "properties": {
+                "cross_domain": {
+                    "description": "destination is on another site",
+                    "type": "boolean"
+                },
+                "target": {
+                    "description": "literal destination, when the page names one",
+                    "type": "string"
+                },
+                "to_ip": {
+                    "description": "destination is a raw IP address",
+                    "type": "boolean"
+                }
+            }
+        },
+        "checks.TLSResult": {
+            "type": "object",
+            "properties": {
+                "ageDays": {
+                    "type": "integer"
+                },
+                "hostnameMismatch": {
+                    "type": "boolean"
+                },
+                "issuer": {
+                    "type": "string"
+                },
+                "present": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "domaininfo.RegistrationData": {
+            "type": "object",
+            "properties": {
+                "age_days": {
+                    "description": "total days since registration; null when unknown",
+                    "type": "integer"
+                },
+                "age_human": {
+                    "description": "e.g. \"2 years 3 months\"; empty when unknown",
+                    "type": "string"
+                },
+                "age_known": {
+                    "description": "Some registries (.de, .eu, …) don't publish a creation date. Then\nAgeKnown is false and AgeDays is null: a zero date would read as 2,025\nyears old, and 0 would read as \"registered today\".",
+                    "type": "boolean"
+                },
+                "created": {
+                    "type": "string"
+                },
+                "dnssec": {
+                    "type": "boolean"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "expiry": {
+                    "type": "string"
+                },
+                "nameservers": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "raw": {
+                    "description": "Raw WHOIS or RDAP JSON for debugging",
+                    "type": "string"
+                },
+                "registrar": {
+                    "type": "string"
+                },
+                "source": {
+                    "description": "\"whois\" or \"rdap\"",
+                    "type": "string"
+                },
+                "status": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "updated": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.KnownSitesResponse": {
+            "type": "object",
+            "properties": {
+                "sites": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user_content": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "handler.ReportRequest": {
+            "type": "object",
+            "required": [
+                "url"
+            ],
+            "properties": {
+                "comment": {
+                    "type": "string",
+                    "maxLength": 1000
+                },
+                "expected_verdict": {
+                    "type": "string",
+                    "enum": [
+                        "Safe",
+                        "Suspicious",
+                        "Risky"
+                    ]
+                },
+                "score": {
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string",
+                    "maxLength": 2048
+                },
+                "verdict": {
+                    "type": "string",
+                    "maxLength": 32
+                }
+            }
+        },
+        "handler.ThreatListResponse": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "hash": {
+                    "type": "string",
+                    "example": "sha256"
+                },
+                "prefix_len": {
+                    "type": "integer",
+                    "example": 8
+                },
+                "prefixes": {
+                    "description": "base64 of the sorted prefixes, back to back",
+                    "type": "string"
+                },
+                "sources": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "threatfeeds.FeedMatch": {
+            "type": "object",
+            "properties": {
+                "checked": {
+                    "description": "feeds that were loaded and checked",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "listed": {
+                    "type": "boolean"
+                },
+                "match": {
+                    "description": "\"url\": this exact link; \"host\": another page on the same site",
+                    "type": "string"
+                },
+                "sources": {
+                    "description": "feeds that list it",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "threatfeeds.GoogleThreatResult": {
+            "type": "object",
+            "properties": {
+                "expire_time": {
+                    "description": "how long Google says the answer holds (Web Risk only)",
+                    "type": "string"
+                },
+                "listed": {
+                    "type": "boolean"
+                },
+                "threat_types": {
+                    "description": "SOCIAL_ENGINEERING, MALWARE, UNWANTED_SOFTWARE",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "typosquat.TyposquatResult": {
+            "type": "object",
+            "properties": {
+                "combo_exact": {
+                    "description": "just the brand name, on another ending (roblox.dk)",
+                    "type": "boolean"
+                },
+                "distance": {
+                    "description": "0 for combo-squat",
+                    "type": "integer"
+                },
+                "embedded_domain": {
+                    "description": "\"google.com\" in accounts.google.com.example.fr",
+                    "type": "string"
+                },
+                "is_combo_squat": {
+                    "type": "boolean"
+                },
+                "is_suspicious": {
+                    "type": "boolean"
+                },
+                "matched_brand": {
+                    "description": "SLD only",
+                    "type": "string"
+                },
+                "matched_domain": {
+                    "type": "string"
+                },
+                "path_brand": {
+                    "description": "\"paypal\" in example.org/paypal-de/login",
+                    "type": "string"
+                },
+                "subdomain_brand": {
+                    "description": "Brand names in other parts of the URL (see CheckURLParts).",
+                    "type": "string"
+                },
+                "subdomain_brand_exact": {
+                    "description": "the label is just the name (github.acme.com)",
+                    "type": "boolean"
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "description": "Full URL analysis",
+            "name": "Analysis"
+        },
+        {
+            "description": "URL structure checks",
+            "name": "URL"
+        },
+        {
+            "description": "DNS and infrastructure checks",
+            "name": "DNS"
+        },
+        {
+            "description": "Security protocol checks",
+            "name": "Security"
+        },
+        {
+            "description": "Threat intelligence lookups",
+            "name": "Threat Intel"
+        },
+        {
+            "description": "Utility and administrative endpoints",
+            "name": "Utility"
+        }
+    ]
+}
