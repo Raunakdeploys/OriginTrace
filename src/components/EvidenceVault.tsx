@@ -86,16 +86,16 @@ export const EvidenceVault: React.FC<EvidenceVaultProps> = ({ investigations, se
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 space-y-8 max-w-6xl mx-auto">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-6xl mx-auto w-full cyber-grid">
       {/* Header */}
-      <div className="space-y-1">
-        <div className="text-xs font-mono uppercase tracking-wider text-cyan-400">
-          Module F & Differentiator C · Verifiable Evidence
+      <div className="space-y-1 pb-4 border-b border-slate-800/80">
+        <div className="text-[11px] font-mono tracking-widest uppercase text-cyan-400 font-bold">
+          [$] CRYPTOGRAPHIC EVM EVIDENCE REGISTRY & VAULT
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-100">
-          Evidence Vault & Local EVM Registry
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100 font-heading">
+          Evidence Vault & On-Chain State Verifier
         </h1>
-        <p className="text-sm text-slate-400 max-w-3xl leading-relaxed">
+        <p className="text-xs sm:text-sm text-slate-400 max-w-3xl leading-relaxed">
           Cryptographically preserve investigation findings with canonical SHA-256 report hashing. Verified fingerprints are registered on an immutable EVM state contract for non-repudiation and forensic provenance.
         </p>
       </div>

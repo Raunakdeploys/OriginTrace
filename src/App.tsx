@@ -52,7 +52,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0b0f17] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/20 selection:text-cyan-300">
+    <div className="min-h-screen bg-[#06080d] text-slate-100 flex flex-col font-sans selection:bg-cyan-500/20 selection:text-cyan-300">
       {/* Top Bar */}
       <Navbar
         activeView={activeView}
@@ -70,7 +70,7 @@ export default function App() {
         />
 
         {/* View Routing */}
-        <main className="flex-1 flex flex-col overflow-hidden bg-[#0b0f17]">
+        <main className="flex-1 flex flex-col overflow-hidden bg-[#06080d]">
           {activeView === 'overview' && (
             <Overview
               investigations={investigations}

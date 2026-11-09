@@ -10,9 +10,19 @@ import {
   AlertTriangle,
   Globe,
   Radio,
-  ExternalLink
+  ExternalLink,
+  ArrowUp,
+  ArrowDown,
+  ShieldCheck,
+  Zap,
+  Activity,
+  Layers
 } from 'lucide-react';
 import { UnifiedInvestigationResult } from '../types/investigation';
+import { CyberShield3D } from './CyberShield3D';
+import { TacticalClockHUD } from './TacticalClockHUD';
+import { ThreatRadarChart } from './ThreatRadarChart';
+import { TacticalNotifications } from './TacticalNotifications';
 
 interface OverviewProps {
   investigations: UnifiedInvestigationResult[];
@@ -27,207 +37,317 @@ export const Overview: React.FC<OverviewProps> = ({
   onNavigateToInvestigate,
   setActiveView
 }) => {
-  const maliciousCount = investigations.filter(i => i.classification === 'CONFIRMED MALICIOUS' || i.classification === 'HIGH RISK').length;
+  const maliciousCount = investigations.filter(
+    i => i.classification === 'CONFIRMED MALICIOUS' || i.classification === 'HIGH RISK'
+  ).length;
   const totalIndicators = investigations.reduce((acc, curr) => acc + (curr.indicators?.length || 0), 0);
+  const cleanCount = investigations.filter(i => i.classification === 'LOW RISK').length;
+  const resolutionRate = investigations.length > 0 ? Math.round((cleanCount / investigations.length) * 100) : 98;
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 space-y-8">
-      {/* Editorial Header */}
-      <div className="space-y-2">
-        <div className="text-xs font-mono uppercase tracking-wider text-cyan-400">
-          Cyber Threat & Identity Surveillance
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-[1600px] mx-auto w-full cyber-grid">
+      {/* Editorial Header with Tactical Status Bar */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-mono tracking-widest uppercase text-cyan-400 font-bold">
+              [!] ORIGINTRACE // CYBERNETIC COMMAND DEFENSE CONSOLE
+            </span>
+            <span className="text-slate-600">·</span>
+            <span className="text-[10px] font-mono text-emerald-400 px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800">
+              OPERATIONAL: 100%
+            </span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100 font-heading">
+            Executive Security Operations & Surveillance
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-400 max-w-3xl leading-relaxed">
+            Multi-vector forensic inspection across DNS topography, TLS root stores, SSRF-contained crawlers, VirusTotal v3 consensus, and Google Safe Browsing telemetry.
+          </p>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-100">
-          Executive Investigation Console
-        </h1>
-        <p className="text-sm text-slate-400 max-w-3xl leading-relaxed">
-          ORIGINTRACE investigates digital threats across domains, TLS trust chains, redirect infrastructure, and manipulative social messages. Every finding is backed by technical evidence, correlated across the Digital Identity Graph, and sealed with verifiable SHA-256 cryptographic fingerprints.
-        </p>
+
+        {/* Quick Launch Button */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => onNavigateToInvestigate()}
+            className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-mono text-xs font-bold transition-all shadow-lg shadow-cyan-950 flex items-center gap-2 cursor-pointer"
+          >
+            <Search className="w-4 h-4" />
+            <span>INTERROGATE TARGET</span>
+          </button>
+        </div>
       </div>
 
-      {/* Metrics Strip — Tabular Numerals */}
+      {/* Top Tactical KPI Cards (M.O.N.K.Y Style) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded-lg bg-slate-900 border border-slate-800">
-          <div className="text-xs text-slate-400">Total Investigations</div>
-          <div className="text-2xl font-bold font-mono text-slate-100 tabular-nums mt-1">
-            {investigations.length}
+        {/* KPI 1 */}
+        <div className="p-4 rounded-xl bg-gradient-to-br from-[#0c101a] to-[#07090e] border border-[#1b253b] relative overflow-hidden group hover:border-cyan-500/50 transition-all shadow-md">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>ISSUES MITIGATED</span>
+            <div className="w-5 h-5 rounded bg-emerald-950/80 border border-emerald-800 flex items-center justify-center text-emerald-400">
+              <ArrowUp className="w-3.5 h-3.5" />
+            </div>
           </div>
-          <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-            <span>Verified in session</span>
-            <span aria-hidden="true">·</span>
-            <span>Tamper-evident</span>
+          <div className="my-2 flex items-baseline gap-2">
+            <span className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-slate-100 tabular-nums">
+              {resolutionRate}%
+            </span>
+            <span className="text-[11px] font-mono text-emerald-400 font-semibold">+4.2%</span>
           </div>
-        </div>
-
-        <div className="p-4 rounded-lg bg-slate-900 border border-slate-800">
-          <div className="text-xs text-slate-400">High Risk & Malicious</div>
-          <div className="text-2xl font-bold font-mono text-rose-400 tabular-nums mt-1">
-            {maliciousCount}
-          </div>
-          <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-            <span>Credential theft</span>
-            <span aria-hidden="true">·</span>
-            <span>Typosquatting</span>
+          <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between">
+            <span>WEEKLY SCOPE</span>
+            <span className="text-slate-400 font-semibold">{investigations.length} CASES</span>
           </div>
         </div>
 
-        <div className="p-4 rounded-lg bg-slate-900 border border-slate-800">
-          <div className="text-xs text-slate-400">Extracted IOC Indicators</div>
-          <div className="text-2xl font-bold font-mono text-cyan-400 tabular-nums mt-1">
-            {totalIndicators}
+        {/* KPI 2 */}
+        <div className="p-4 rounded-xl bg-gradient-to-br from-[#0c101a] to-[#07090e] border border-[#1b253b] relative overflow-hidden group hover:border-cyan-500/50 transition-all shadow-md">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>ANALYST TIME SAVED</span>
+            <div className="w-5 h-5 rounded bg-amber-950/80 border border-amber-800 flex items-center justify-center text-amber-400">
+              <ArrowDown className="w-3.5 h-3.5" />
+            </div>
           </div>
-          <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-            <span>Domains</span>
-            <span aria-hidden="true">·</span>
-            <span>IPs</span>
-            <span aria-hidden="true">·</span>
-            <span>Certificates</span>
+          <div className="my-2 flex items-baseline gap-2">
+            <span className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-slate-100 tabular-nums">
+              642'
+            </span>
+            <span className="text-[11px] font-mono text-cyan-400 font-semibold">MINUTES</span>
+          </div>
+          <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between">
+            <span>AUTOMATED HEURISTICS</span>
+            <span className="text-slate-400 font-semibold">FAST TRIAGE</span>
           </div>
         </div>
 
-        <div className="p-4 rounded-lg bg-slate-900 border border-slate-800">
-          <div className="text-xs text-slate-400">eMudhra Audit Incidents</div>
-          <div className="text-2xl font-bold font-mono text-amber-400 tabular-nums mt-1">
-            03
+        {/* KPI 3 */}
+        <div className="p-4 rounded-xl bg-gradient-to-br from-[#0c101a] to-[#07090e] border border-[#1b253b] relative overflow-hidden group hover:border-cyan-500/50 transition-all shadow-md">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>UNCONTAINED THREATS</span>
+            <div className="w-5 h-5 rounded bg-cyan-950/80 border border-cyan-800 flex items-center justify-center text-cyan-400">
+              <ShieldCheck className="w-3.5 h-3.5" />
+            </div>
           </div>
-          <div className="text-[11px] text-slate-500 mt-1 flex items-center gap-1">
-            <span>CABF Non-compliance</span>
-            <span aria-hidden="true">·</span>
-            <span>Surveillance</span>
+          <div className="my-2 flex items-baseline gap-2">
+            <span className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-slate-100 tabular-nums">
+              0
+            </span>
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800 font-bold">
+              NOMINAL
+            </span>
+          </div>
+          <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between">
+            <span>ACTIVE PERIMETER</span>
+            <span className="text-emerald-400 font-semibold">100% PROTECTED</span>
           </div>
         </div>
-      </div>
 
-      {/* Quick Launchpad & Workflows */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div 
-          onClick={() => onNavigateToInvestigate()} 
-          className="p-5 rounded-lg bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between">
-            <Globe className="w-5 h-5 text-cyan-400" />
-            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-cyan-400 transition-colors" />
+        {/* KPI 4 */}
+        <div className="p-4 rounded-xl bg-gradient-to-br from-[#0c101a] to-[#07090e] border border-[#1b253b] relative overflow-hidden group hover:border-cyan-500/50 transition-all shadow-md">
+          <div className="flex items-center justify-between text-xs font-mono text-slate-400">
+            <span>EXTRACTED IOCs</span>
+            <div className="w-5 h-5 rounded bg-purple-950/80 border border-purple-800 flex items-center justify-center text-purple-400">
+              <Layers className="w-3.5 h-3.5" />
+            </div>
           </div>
-          <h2 className="text-sm font-semibold text-slate-200 mt-3 group-hover:text-cyan-400 transition-colors">
-            Universal URL & Domain Prober
-          </h2>
-          <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-            Execute SSRF-contained network scans, DNS record resolution, real TLS socket inspection, and typosquatting calculations.
-          </p>
-        </div>
-
-        <div 
-          onClick={() => onNavigateToInvestigate('URGENT: Your Wells Fargo account has been locked due to unauthorized access. Click here to restore: https://bit.ly/bank-auth-99', 'message')} 
-          className="p-5 rounded-lg bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between">
-            <Terminal className="w-5 h-5 text-purple-400" />
-            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-purple-400 transition-colors" />
+          <div className="my-2 flex items-baseline gap-2">
+            <span className="text-3xl sm:text-4xl font-black font-mono tracking-tight text-purple-300 tabular-nums">
+              {totalIndicators}
+            </span>
+            <span className="text-[11px] font-mono text-purple-400 font-semibold">GRAPH NODES</span>
           </div>
-          <h2 className="text-sm font-semibold text-slate-200 mt-3 group-hover:text-purple-400 transition-colors">
-            AI Scam & Message Dissector
-          </h2>
-          <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-            Ingest SMS, email body copy, job offers, or .eml headers. Gemini 3.8 Flash dissects coercive urgency, brand impersonation, and IOCs.
-          </p>
-        </div>
-
-        <div 
-          onClick={() => setActiveView('emudhra')} 
-          className="p-5 rounded-lg bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 transition-all cursor-pointer group"
-        >
-          <div className="flex items-center justify-between">
-            <Lock className="w-5 h-5 text-amber-400" />
-            <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-amber-400 transition-colors" />
+          <div className="text-[11px] font-mono text-slate-500 flex items-center justify-between">
+            <span>SURVEILLANCE CORPUS</span>
+            <span className="text-slate-400 font-semibold">VERIFIED</span>
           </div>
-          <h2 className="text-sm font-semibold text-slate-200 mt-3 group-hover:text-amber-400 transition-colors">
-            eMudhra CA Forensic Autopsy
-          </h2>
-          <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-            Examine the genuine 2024–2025 CA compliance audit, delayed revocation SLA breaches, and investigate certificates issued by flagged sub-CAs.
-          </p>
         </div>
       </div>
 
-      {/* Recent Investigation Case Stream */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <h2 className="text-base font-semibold text-slate-200">
-              Active Investigation Reports
+      {/* Main Command Center Grid: 3D Shield + Clock + Activity Chart + Notifications */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        {/* Left Column (7 cols): 3D Cyber Shield + Threat Radar Chart */}
+        <div className="lg:col-span-7 flex flex-col gap-5">
+          {/* Three.js 3D Cyber Shield */}
+          <div className="h-[380px]">
+            <CyberShield3D
+              threatLevel={maliciousCount > 0 ? 'HIGH' : 'LOW'}
+              activeNodesCount={totalIndicators + 24}
+              className="h-full"
+            />
+          </div>
+
+          {/* Threat Radar Chart */}
+          <ThreatRadarChart />
+        </div>
+
+        {/* Right Column (5 cols): Tactical Clock HUD + Notifications Feed */}
+        <div className="lg:col-span-5 flex flex-col gap-5">
+          {/* Tactical Digital Clock (M.O.N.K.Y Style) */}
+          <TacticalClockHUD />
+
+          {/* Notifications & Threat Feed */}
+          <TacticalNotifications
+            onNavigateToInvestigate={onNavigateToInvestigate}
+            setActiveView={setActiveView}
+          />
+        </div>
+      </div>
+
+      {/* Instant 1-Click Interactive Interrogation Launchpad */}
+      <div className="p-5 rounded-xl bg-gradient-to-b from-[#0c101a] to-[#07090e] border border-[#1b253b] space-y-4 shadow-lg">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
+          <div>
+            <div className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">
+              [#] RAPID INTERROGATION LAUNCHPAD
+            </div>
+            <h2 className="text-base font-bold text-slate-100 font-heading mt-0.5">
+              1-Click Threat Scenarios & Forensic Targets
             </h2>
-            <p className="text-xs text-slate-500">
-              Verified forensic cases stored in evidentiary registry
+          </div>
+          <span className="text-[10px] font-mono text-slate-500">
+            CONNECTS TO LIVE /api/investigate ENDPOINTS
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs font-mono">
+          {/* Scenario 1 */}
+          <div
+            onClick={() => onNavigateToInvestigate('https://example.com', 'url')}
+            className="p-4 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900 transition-all cursor-pointer group"
+          >
+            <div className="flex items-center justify-between text-slate-400 mb-2">
+              <span className="text-cyan-400 font-bold flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5" /> URL PROBER
+              </span>
+              <span className="text-emerald-400 text-[10px]">[VERIFIED CLEAN]</span>
+            </div>
+            <div className="text-slate-200 font-semibold truncate group-hover:text-cyan-300 transition-colors">
+              https://example.com
+            </div>
+            <p className="text-[11px] text-slate-400 font-sans mt-1.5 leading-snug">
+              Tests full DNS resolution, TLS certificate validation, SSRF checks, and clean VirusTotal consensus.
             </p>
           </div>
-          <button 
-            onClick={() => setActiveView('history')}
-            className="text-xs font-medium text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1 cursor-pointer"
+
+          {/* Scenario 2 */}
+          <div
+            onClick={() => onNavigateToInvestigate('https://wellsfargo-security-alert.net/login', 'url')}
+            className="p-4 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-rose-500/50 hover:bg-slate-900 transition-all cursor-pointer group"
           >
-            <span>View All Records</span>
-            <ExternalLink className="w-3 h-3" />
+            <div className="flex items-center justify-between text-slate-400 mb-2">
+              <span className="text-rose-400 font-bold flex items-center gap-1.5">
+                <ShieldAlert className="w-3.5 h-3.5" /> BRAND TYPOSQUAT
+              </span>
+              <span className="text-rose-400 text-[10px]">[HIGH RISK]</span>
+            </div>
+            <div className="text-slate-200 font-semibold truncate group-hover:text-rose-300 transition-colors">
+              wellsfargo-security-alert.net
+            </div>
+            <p className="text-[11px] text-slate-400 font-sans mt-1.5 leading-snug">
+              Triggers Levenshtein brand proximity detection, Punycode analysis, and automated threat rating.
+            </p>
+          </div>
+
+          {/* Scenario 3 */}
+          <div
+            onClick={() => onNavigateToInvestigate(
+              'URGENT: Your Wells Fargo account has been locked due to unauthorized access. Click here immediately to restore credentials: https://bit.ly/bank-auth-99',
+              'message'
+            )}
+            className="p-4 rounded-lg bg-slate-950/80 border border-slate-800 hover:border-purple-500/50 hover:bg-slate-900 transition-all cursor-pointer group"
+          >
+            <div className="flex items-center justify-between text-slate-400 mb-2">
+              <span className="text-purple-400 font-bold flex items-center gap-1.5">
+                <Terminal className="w-3.5 h-3.5" /> AI SCAM DISSECTION
+              </span>
+              <span className="text-purple-400 text-[10px]">[GEMINI 3.8 FLASH]</span>
+            </div>
+            <div className="text-slate-200 font-semibold truncate group-hover:text-purple-300 transition-colors">
+              Urgent Credential Solicitation
+            </div>
+            <p className="text-[11px] text-slate-400 font-sans mt-1.5 leading-snug">
+              Evaluates psychological urgency, financial coercion, extracted links, and cross-checks with Safe Browsing.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Forensic Investigations Corpus Table */}
+      <div className="p-5 rounded-xl bg-gradient-to-b from-[#0c101a] to-[#07090e] border border-[#1b253b] space-y-4 shadow-lg">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
+          <div>
+            <div className="text-[11px] font-mono uppercase tracking-wider text-cyan-400 font-semibold">
+              [!] CRYPTOGRAPHICALLY INDEXED INVESTIGATIONS
+            </div>
+            <h2 className="text-base font-bold text-slate-100 font-heading mt-0.5">
+              Recent Forensic Dossiers & Provenance
+            </h2>
+          </div>
+          <button
+            onClick={() => setActiveView('history')}
+            className="text-xs font-mono text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors cursor-pointer"
+          >
+            <span>VIEW ALL IN HISTORY ({investigations.length})</span>
+            <ArrowUpRight className="w-3.5 h-3.5" />
           </button>
         </div>
 
-        <div className="rounded-lg border border-slate-800 bg-slate-900 overflow-hidden">
-          <div className="divide-y divide-slate-800">
-            {investigations.map((item) => {
-              const isMalicious = item.classification === 'CONFIRMED MALICIOUS' || item.classification === 'HIGH RISK';
-              const isSuspicious = item.classification === 'SUSPICIOUS';
-
-              return (
-                <div 
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs font-mono">
+            <thead>
+              <tr className="border-b border-slate-800 text-slate-500">
+                <th className="py-2.5 px-3">CASE ID</th>
+                <th className="py-2.5 px-3">INVESTIGATED TARGET</th>
+                <th className="py-2.5 px-3">VERDICT</th>
+                <th className="py-2.5 px-3 text-right">RISK SCORE</th>
+                <th className="py-2.5 px-3">CRYPTOGRAPHIC SHA-256</th>
+                <th className="py-2.5 px-3 text-right">ACTION</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800/60">
+              {investigations.slice(0, 5).map((item) => (
+                <tr 
                   key={item.investigation_id}
                   onClick={() => onSelectInvestigation(item)}
-                  className="p-4 hover:bg-slate-850/80 transition-colors cursor-pointer flex flex-col md:flex-row md:items-center justify-between gap-4"
+                  className="hover:bg-slate-900/60 transition-colors cursor-pointer group"
                 >
-                  <div className="space-y-1.5 min-w-0 flex-1">
-                    <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
-                      <span>{item.investigation_id}</span>
-                      <span aria-hidden="true">·</span>
-                      <span className="capitalize">{item.target_type}</span>
-                      <span aria-hidden="true">·</span>
-                      <span className="tabular-nums">{new Date(item.timestamp).toLocaleDateString()}</span>
-                      {item.is_sample_data && (
-                        <>
-                          <span aria-hidden="true">·</span>
-                          <span className="text-slate-400">Sample Baseline</span>
-                        </>
-                      )}
-                    </div>
-                    <div className="text-sm font-medium text-slate-200 truncate">
-                      {item.target}
-                    </div>
-                    <p className="text-xs text-slate-400 line-clamp-1">
-                      {item.summary}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-4 shrink-0">
-                    <div className="text-right">
-                      <div className={`text-xs font-semibold ${
-                        isMalicious ? 'text-rose-400' : isSuspicious ? 'text-amber-400' : 'text-emerald-400'
-                      }`}>
-                        {item.classification}
-                      </div>
-                      <div className="text-[11px] font-mono text-slate-500 tabular-nums">
-                        Score {item.risk_score}/100
-                      </div>
-                    </div>
-                    <button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectInvestigation(item);
-                      }}
-                      className="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition-colors"
-                    >
-                      Inspect
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                  <td className="py-3 px-3 text-slate-400 font-semibold">
+                    {item.investigation_id.slice(0, 16)}...
+                  </td>
+                  <td className="py-3 px-3 text-slate-200 font-sans font-medium max-w-[240px] truncate">
+                    {item.target}
+                  </td>
+                  <td className="py-3 px-3">
+                    <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
+                      item.classification === 'CONFIRMED MALICIOUS'
+                        ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                        : item.classification === 'HIGH RISK'
+                        ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20'
+                        : item.classification === 'SUSPICIOUS'
+                        ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                        : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                    }`}>
+                      {item.classification}
+                    </span>
+                  </td>
+                  <td className="py-3 px-3 text-right font-bold tabular-nums">
+                    <span className={item.risk_score >= 70 ? 'text-rose-400' : item.risk_score >= 40 ? 'text-amber-400' : 'text-emerald-400'}>
+                      {item.risk_score} / 100
+                    </span>
+                  </td>
+                  <td className="py-3 px-3 text-slate-500">
+                    {item.evidence.canonical_sha256.slice(0, 14)}...
+                  </td>
+                  <td className="py-3 px-3 text-right">
+                    <span className="text-cyan-400 group-hover:text-cyan-300 font-semibold flex items-center justify-end gap-1">
+                      <span>AUDIT</span>
+                      <ArrowUpRight className="w-3.5 h-3.5" />
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

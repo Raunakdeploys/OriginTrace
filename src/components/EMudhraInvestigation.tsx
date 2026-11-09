@@ -60,16 +60,16 @@ export const EMudhraInvestigation: React.FC<EMudhraInvestigationProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 space-y-8 max-w-6xl mx-auto">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-6xl mx-auto w-full cyber-grid">
       {/* Header */}
-      <div className="space-y-1">
-        <div className="text-xs font-mono uppercase tracking-wider text-amber-400">
-          Module B · CA Trust Forensics
+      <div className="space-y-1 pb-4 border-b border-slate-800/80">
+        <div className="text-[11px] font-mono tracking-widest uppercase text-amber-400 font-bold">
+          [!] CA ROOT STORE SURVEILLANCE // EMUDHRA AUDIT
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-100">
-          eMudhra Certificate Authority Audit & Incident Investigation
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100 font-heading">
+          eMudhra Certificate Authority Audit & Incident Dossier
         </h1>
-        <p className="text-sm text-slate-400 max-w-3xl leading-relaxed">
+        <p className="text-xs sm:text-sm text-slate-400 max-w-3xl leading-relaxed">
           Comprehensive forensic autopsy of recent eMudhra compliance incidents across Mozilla NSS, CA/Browser Forum, and Google Chrome Root Store programs (2024–2025).
         </p>
       </div>

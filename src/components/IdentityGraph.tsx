@@ -93,17 +93,17 @@ export const IdentityGraph: React.FC<IdentityGraphProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col overflow-hidden p-8 space-y-6 max-w-7xl mx-auto w-full">
+    <div className="flex-1 flex flex-col overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full cyber-grid">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
         <div className="space-y-1">
-          <div className="text-xs font-mono uppercase tracking-wider text-cyan-400">
-            Differentiator A · Evidence-Linked Graph
+          <div className="text-[11px] font-mono tracking-widest uppercase text-cyan-400 font-bold">
+            [*] DIGITAL IDENTITY TOPOGRAPHY // CORRELATED NET
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100">
-            Digital Identity Graph
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100 font-heading">
+            Evidence-Linked Digital Identity Graph
           </h1>
-          <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
             Every edge in the Digital Identity Graph represents an evidence-proven connection. A shared IP address or hosting provider does not prove common ownership.
           </p>
         </div>

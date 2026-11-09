@@ -54,17 +54,17 @@ export const InvestigationHistory: React.FC<InvestigationHistoryProps> = ({
   };
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 space-y-6 max-w-6xl mx-auto">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-6xl mx-auto w-full cyber-grid">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
         <div className="space-y-1">
-          <div className="text-xs font-mono uppercase tracking-wider text-cyan-400">
-            Case Archive & Audit Trail
+          <div className="text-[11px] font-mono tracking-widest uppercase text-cyan-400 font-bold">
+            [+] CASE ARCHIVE & FORENSIC DOSSIER LOG
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100">
-            Investigation History
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100 font-heading">
+            Historical Investigation Dossiers
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-400">
             Comprehensive archive of historical investigations, extracted indicators, and cryptographic certificates.
           </p>
         </div>

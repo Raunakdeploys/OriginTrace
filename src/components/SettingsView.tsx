@@ -36,16 +36,16 @@ export const SettingsView: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 space-y-8 max-w-5xl mx-auto">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-5xl mx-auto w-full cyber-grid">
       {/* Header */}
-      <div className="space-y-1">
-        <div className="text-xs font-mono uppercase tracking-wider text-cyan-400">
-          Configuration & Provenance
+      <div className="space-y-1 pb-4 border-b border-slate-800/80">
+        <div className="text-[11px] font-mono tracking-widest uppercase text-cyan-400 font-bold">
+          [#] SYSTEM ARCHITECTURE // ENGINE CONFIGURATION & TI
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-100">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100 font-heading">
           Engine Settings & Security Architecture
         </h1>
-        <p className="text-sm text-slate-400 max-w-2xl leading-relaxed">
+        <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
           Review SSRF security perimeter rules, live threat intelligence integrations, server-side AI model configurations, and local EVM state contracts.
         </p>
       </div>

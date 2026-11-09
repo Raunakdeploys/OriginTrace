@@ -37,17 +37,17 @@ export const TrustDrift: React.FC<TrustDriftProps> = ({
   const drift = report?.trust_drift;
 
   return (
-    <div className="flex-1 overflow-y-auto p-8 space-y-8 max-w-6xl mx-auto">
+    <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6 max-w-6xl mx-auto w-full cyber-grid">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
         <div className="space-y-1">
-          <div className="text-xs font-mono uppercase tracking-wider text-cyan-400">
-            Differentiator B · Infrastructure Drift
+          <div className="text-[11px] font-mono tracking-widest uppercase text-cyan-400 font-bold">
+            [~] INFRASTRUCTURE ANOMALY & DRIFT MONITOR
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-100">
-            Trust Drift Detection
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-100 font-heading">
+            Trust Drift & Mutation Forensics
           </h1>
-          <p className="text-xs text-slate-400 max-w-2xl leading-relaxed">
+          <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
             Compare timestamped investigation snapshots to identify weaponization patterns, sudden IP migrations, stealth certificate swaps, and security header degradation.
           </p>
         </div>

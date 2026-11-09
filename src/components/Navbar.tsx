@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldAlert, PlusCircle, Terminal, HelpCircle } from 'lucide-react';
+import { ShieldCheck, PlusCircle, Terminal, HelpCircle, Activity, Globe, Zap, Search } from 'lucide-react';
 
 interface NavbarProps {
   activeView: string;
@@ -9,67 +9,101 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ activeView, setActiveView, onNewInvestigation }) => {
   return (
-    <header className="h-14 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md px-6 flex items-center justify-between gap-8 shrink-0 z-30">
-      {/* Zone 1: Single Wordmark */}
+    <header className="h-16 border-b border-[#1b253b] bg-[#070a10]/90 backdrop-blur-md px-4 sm:px-6 flex items-center justify-between gap-6 shrink-0 z-30 select-none">
+      {/* Zone 1: Brand & Cybernetic Wordmark */}
       <div className="flex items-center gap-3 shrink-0">
         <a 
           href="#overview" 
           onClick={(e) => { e.preventDefault(); setActiveView('overview'); }}
-          className="text-base font-bold tracking-tight text-slate-100 flex items-center gap-2 hover:text-cyan-400 transition-colors whitespace-nowrap"
+          className="flex items-center gap-2.5 group cursor-pointer"
         >
-          <div className="w-7 h-7 rounded bg-cyan-950 border border-cyan-800/80 flex items-center justify-center text-cyan-400 font-mono text-xs font-semibold">
+          {/* High-tech Emblem */}
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-950 via-slate-900 to-blue-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400 font-mono text-xs font-black shadow-[0_0_12px_rgba(6,182,212,0.25)] group-hover:border-cyan-400 transition-all">
             OT
           </div>
-          ORIGINTRACE
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-base font-extrabold tracking-wider text-slate-100 font-display group-hover:text-cyan-400 transition-colors">
+                ORIGINTRACE
+              </span>
+              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-cyan-950/80 text-cyan-300 border border-cyan-800/80 font-bold hidden sm:inline">
+                v1.0-DEFENSE
+              </span>
+            </div>
+            <div className="text-[10px] font-mono text-slate-500 hidden md:block">
+              CYBER DIGITAL IDENTITY & THREAT VERIFIER
+            </div>
+          </div>
         </a>
-        <span className="text-slate-600 text-xs hidden sm:inline" aria-hidden="true">/</span>
-        <span className="text-xs text-slate-400 font-medium hidden sm:inline">
-          Cyber Digital Identity & Threat Verifier
-        </span>
       </div>
 
-      {/* Zone 2: Concise Nav Links */}
-      <nav className="hidden md:flex items-center gap-6 text-xs font-medium text-slate-400">
+      {/* Zone 2: Navigation Links */}
+      <nav className="hidden lg:flex items-center gap-1 p-1 bg-slate-950/80 rounded-lg border border-slate-800/80 text-xs font-mono">
         <button 
           onClick={() => setActiveView('overview')}
-          className={`hover:text-slate-200 transition-colors whitespace-nowrap shrink-0 ${activeView === 'overview' ? 'text-cyan-400 font-semibold' : ''}`}
+          className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+            activeView === 'overview' 
+              ? 'bg-cyan-950 text-cyan-400 border border-cyan-800/80 font-bold shadow-sm' 
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
         >
-          Operations
+          [!] COMMAND
         </button>
         <button 
           onClick={() => setActiveView('investigate')}
-          className={`hover:text-slate-200 transition-colors whitespace-nowrap shrink-0 ${activeView === 'investigate' ? 'text-cyan-400 font-semibold' : ''}`}
+          className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+            activeView === 'investigate' 
+              ? 'bg-cyan-950 text-cyan-400 border border-cyan-800/80 font-bold shadow-sm' 
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
         >
-          Investigate
+          [#] INVESTIGATE
         </button>
         <button 
           onClick={() => setActiveView('identity_graph')}
-          className={`hover:text-slate-200 transition-colors whitespace-nowrap shrink-0 ${activeView === 'identity_graph' ? 'text-cyan-400 font-semibold' : ''}`}
+          className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+            activeView === 'identity_graph' 
+              ? 'bg-cyan-950 text-cyan-400 border border-cyan-800/80 font-bold shadow-sm' 
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
         >
-          Identity Graph
+          [*] IDENTITY GRAPH
         </button>
         <button 
-          onClick={() => setActiveView('emudhra')}
-          className={`hover:text-slate-200 transition-colors whitespace-nowrap shrink-0 ${activeView === 'emudhra' ? 'text-cyan-400 font-semibold' : ''}`}
+          onClick={() => setActiveView('trust_drift')}
+          className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+            activeView === 'trust_drift' 
+              ? 'bg-cyan-950 text-cyan-400 border border-cyan-800/80 font-bold shadow-sm' 
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
         >
-          eMudhra Audit
+          [~] TRUST DRIFT
         </button>
         <button 
           onClick={() => setActiveView('evidence_vault')}
-          className={`hover:text-slate-200 transition-colors whitespace-nowrap shrink-0 ${activeView === 'evidence_vault' ? 'text-cyan-400 font-semibold' : ''}`}
+          className={`px-3 py-1.5 rounded-md transition-all cursor-pointer ${
+            activeView === 'evidence_vault' 
+              ? 'bg-cyan-950 text-cyan-400 border border-cyan-800/80 font-bold shadow-sm' 
+              : 'text-slate-400 hover:text-slate-200'
+          }`}
         >
-          Evidence Vault
+          [$] EVIDENCE VAULT
         </button>
       </nav>
 
-      {/* Zone 3: 1 Primary Action */}
+      {/* Zone 3: Live Perimeter Status & Action Button */}
       <div className="flex items-center gap-3 shrink-0">
+        <div className="hidden xl:flex items-center gap-2 px-2.5 py-1 rounded bg-slate-950 border border-slate-800 text-[10px] font-mono text-slate-400">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>SSRF FIREWALL: <strong className="text-emerald-400">ISOLATED</strong></span>
+        </div>
+
         <button
           onClick={onNewInvestigation}
-          className="px-3.5 py-1.5 text-xs font-medium text-slate-900 bg-cyan-400 rounded-md hover:bg-cyan-300 transition-colors flex items-center gap-1.5 shadow-sm shadow-cyan-950 whitespace-nowrap shrink-0 cursor-pointer"
+          className="px-3.5 py-1.5 text-xs font-mono font-bold text-slate-950 bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 rounded-md transition-all flex items-center gap-1.5 shadow-md shadow-cyan-950 cursor-pointer"
         >
           <PlusCircle className="w-3.5 h-3.5" />
-          <span>New Investigation</span>
+          <span>INTERROGATE TARGET</span>
         </button>
       </div>
     </header>
