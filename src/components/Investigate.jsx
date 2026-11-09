@@ -20,6 +20,7 @@ import {
   Activity, 
   Zap 
 } from 'lucide-react';
+import { ScamExposureRescueModal } from './ScamExposureRescue.jsx';
 
 export const Investigate = ({
   initialTarget = '',
@@ -35,6 +36,7 @@ export const Investigate = ({
   const [errorMessage, setErrorMessage] = useState(null);
   const [copiedHash, setCopiedHash] = useState(false);
   const [copiedIndicator, setCopiedIndicator] = useState(null);
+  const [isRescueOpen, setIsRescueOpen] = useState(false);
 
   const handleLoadPreset = (target, type) => {
     setTargetType(type);
@@ -330,6 +332,21 @@ export const Investigate = ({
                 </p>
               </div>
             </div>
+
+            {/* Prompt for Scam Exposure Rescue */}
+            <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06]">
+              <span className="text-xs text-slate-400">
+                Already clicked or shared credentials with this target?
+              </span>
+              <button
+                type="button"
+                onClick={() => setIsRescueOpen(true)}
+                className="px-3.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/25 text-xs font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
+                <span>Open Scam Exposure Rescue</span>
+              </button>
+            </div>
           </div>
 
           {/* Limitations Card (if any recorded) */}
@@ -474,6 +491,13 @@ export const Investigate = ({
           </div>
         </div>
       )}
+
+      {/* Interactive Modal for Scam Exposure Rescue */}
+      <ScamExposureRescueModal
+        isOpen={isRescueOpen}
+        onClose={() => setIsRescueOpen(false)}
+        currentReport={currentReport}
+      />
     </div>
   );
 };

@@ -47,3 +47,4 @@
 | **DIFF-B**| Core Differentiator | Trust Drift | `IMPLEMENTED` | `src/components/TrustDrift.jsx` | Historical snapshot diffing (DNS, cert, headers) | Explicit "No baseline" warning on 1st scan; zero synthetic data |
 | **DIFF-C**| Core Differentiator | Verifiable Threat Evidence | `IMPLEMENTED` | `src/components/EvidenceVault.jsx` | Independent cryptographic verification modal & JSON cert export | SHA-256 proof of tamper-resistance |
 | **SEC1** | Security Hardening | SSRF Protection | `IMPLEMENTED` | `server.ts` (`isPrivateOrReservedIP`) | Blocks 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, metadata | Revalidated at every redirect hop; port restricted |
+| **JUDGE-RESCUE** | Judge-Impact Feature | Scam Exposure Rescue | `IMPLEMENTED` | `src/components/ScamExposureRescue.jsx` | 8-archetype triage flow with tailored urgent action plans | 100% privacy-preserving client-side execution; zero secret collection |
