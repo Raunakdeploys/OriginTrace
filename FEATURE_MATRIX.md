@@ -48,3 +48,8 @@
 | **DIFF-C**| Core Differentiator | Verifiable Threat Evidence | `IMPLEMENTED` | `src/components/EvidenceVault.jsx` | Independent cryptographic verification modal & JSON cert export | SHA-256 proof of tamper-resistance |
 | **SEC1** | Security Hardening | SSRF Protection | `IMPLEMENTED` | `server.ts` (`isPrivateOrReservedIP`) | Blocks 127.0.0.0/8, 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, metadata | Revalidated at every redirect hop; port restricted |
 | **JUDGE-RESCUE** | Judge-Impact Feature | Scam Exposure Rescue | `IMPLEMENTED` | `src/components/ScamExposureRescue.jsx` | 8-archetype triage flow with tailored urgent action plans | 100% privacy-preserving client-side execution; zero secret collection |
+| **HACK-LAB** | Elite Red Team Lab | Adversarial Threat Lab | `IMPLEMENTED` | `src/components/ThreatLab.jsx` | Quishing QR analyzer, Punycode/Homoglyph lab, AiTM 2FA bypass simulator | Real canvas QR rendering & Evilginx topology simulation |
+| **HACK-DOSSIER** | Forensic Notarization | Court-Grade Certified Dossier | `IMPLEMENTED` | `src/components/CertifiedDossierModal.jsx` | Printable forensic certificate with digital seal, EVM block reference, SHA-256 fingerprint | Print-ready layout, JSON certificate export, chain-of-custody |
+| **HACK-AUDIO** | Accessibility & SOC Debrief | Audio SOC Debrief | `IMPLEMENTED` | `src/components/Investigate.jsx` | Client-side Web Speech API executive brief synthesis | Zero-latency, works offline, no external audio key needed |
+| **HACK-3D** | 3D Spatial Intelligence | Interactive WebGL Matrix | `IMPLEMENTED` | `src/components/CyberShield3D.jsx` | Three.js orbital shield with interactive judge threat toggles | Real-time shader color shifts (Clean/Suspicious/Critical) |
+

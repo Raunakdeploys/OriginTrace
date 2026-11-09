@@ -1,73 +1,103 @@
 import React from 'react';
-import { Menu, PlusCircle, ShieldCheck, Search, Activity, Globe } from 'lucide-react';
+import { Menu, Plus, ShieldCheck, ArrowLeft } from 'lucide-react';
 
 export const Navbar = ({ 
   activeView, 
   setActiveView, 
   onNewInvestigation,
-  onToggleSidebar 
+  onToggleSidebar,
+  onGoBack,
+  canGoBack = false
 }) => {
   const viewTitles = {
     overview: 'Operations Overview',
-    investigate: 'Target Interrogator',
+    investigate: 'Target Interrogation',
     identity_graph: 'Digital Identity Graph',
-    trust_drift: 'Trust Drift Forensics',
-    emudhra: 'eMudhra CA Audit',
-    evidence_vault: 'EVM Evidence Vault',
-    history: 'Historical Dossiers',
-    settings: 'Settings & Security'
+    trust_drift: 'Trust Drift Analysis',
+    emudhra: 'eMudhra CA Audit Dossier',
+    threat_lab: 'Adversarial Threat Lab',
+    evidence_vault: 'Cryptographic Evidence Vault',
+    history: 'Historical Investigations',
+    settings: 'Settings & Security Policy'
   };
 
   return (
-    <header className="h-16 px-4 sm:px-6 flex items-center justify-between gap-4 shrink-0 z-30 select-none">
-      {/* Zone 1: Mobile Hamburger + Brand */}
-      <div className="flex items-center gap-3">
+    <header className="h-14 px-4 sm:px-6 flex items-center justify-between gap-4 shrink-0 z-30 select-none bg-[#0b0d11] border-b border-white/[0.07]">
+      {/* Zone 1: Mobile Hamburger + Back Button + Brand Wordmark */}
+      <div className="flex items-center gap-2 sm:gap-3">
         <button
           onClick={onToggleSidebar}
-          className="lg:hidden p-2 rounded-xl glass-subtle text-slate-300 hover:text-white cursor-pointer"
+          className="lg:hidden p-1.5 rounded-lg border border-white/[0.08] text-slate-400 hover:text-white hover:bg-white/[0.04] transition-colors cursor-pointer"
           aria-label="Toggle navigation drawer"
         >
-          <Menu className="w-5 h-5" />
+          <Menu className="w-4 h-4" />
         </button>
+
+        {canGoBack && (
+          <button
+            onClick={onGoBack}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 hover:text-cyan-200 border border-cyan-500/25 text-xs font-mono font-medium transition-colors cursor-pointer shadow-sm"
+            aria-label="Go back to previous screen"
+            title="Go back"
+          >
+            <ArrowLeft className="w-3.5 h-3.5 text-cyan-400" />
+            <span className="font-semibold">Back</span>
+          </button>
+        )}
 
         <a 
           href="#overview" 
           onClick={(e) => { e.preventDefault(); setActiveView('overview'); }}
-          className="flex items-center gap-2.5 group cursor-pointer"
+          className="flex items-center gap-2.5 cursor-pointer group ml-1"
         >
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500/20 via-blue-500/20 to-purple-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-mono font-bold text-xs shadow-[0_0_15px_rgba(6,182,212,0.2)]">
+          <div className="w-6 h-6 rounded-md bg-white/[0.08] border border-white/[0.12] flex items-center justify-center text-white font-mono font-bold text-[11px]">
             OT
           </div>
-          <div>
-            <div className="text-sm sm:text-base font-extrabold tracking-tight text-white font-heading">
+          <div className="flex items-baseline gap-2">
+            <span className="text-sm font-bold tracking-tight text-white font-heading">
               ORIGINTRACE
-            </div>
-            <div className="text-[10px] text-slate-500 font-mono hidden sm:block">
-              Digital Threat & Identity Intelligence
-            </div>
+            </span>
+            <span className="text-[11px] font-mono text-slate-500 hidden sm:inline">
+              v1.0
+            </span>
           </div>
         </a>
       </div>
 
-      {/* Zone 2: Contextual Breadcrumb / Active View */}
+      {/* Zone 2: Contextual Breadcrumb with clickable root */}
       <div className="hidden md:flex items-center gap-2 text-xs font-mono text-slate-400">
-        <span className="text-slate-600">/</span>
-        <span className="text-slate-200 font-medium">{viewTitles[activeView] || 'Console'}</span>
+        {activeView !== 'overview' ? (
+          <>
+            <button 
+              onClick={() => setActiveView('overview')}
+              className="text-slate-400 hover:text-cyan-400 transition-colors cursor-pointer flex items-center gap-1"
+            >
+              Overview
+            </button>
+            <span className="text-slate-600">/</span>
+            <span className="text-slate-200 font-medium">{viewTitles[activeView] || 'Console'}</span>
+          </>
+        ) : (
+          <>
+            <span className="text-slate-600">/</span>
+            <span className="text-slate-200 font-medium">{viewTitles[activeView] || 'Console'}</span>
+          </>
+        )}
       </div>
 
-      {/* Zone 3: Security Status & Primary Action */}
+      {/* Zone 3: Quiet Telemetry & Primary Action */}
       <div className="flex items-center gap-3 shrink-0">
-        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full glass-subtle text-xs font-mono text-slate-400">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-          <span className="text-slate-300">SSRF Active</span>
+        <div className="hidden sm:flex items-center gap-1.5 text-xs font-mono text-slate-400">
+          <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
+          <span className="text-slate-400">SSRF Active</span>
         </div>
 
         <button
           onClick={onNewInvestigation}
-          className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 text-xs font-mono font-bold transition-all flex items-center gap-1.5 shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:shadow-[0_0_25px_rgba(6,182,212,0.5)] cursor-pointer"
+          className="px-3.5 py-1.5 rounded-lg bg-white hover:bg-slate-200 text-slate-950 text-xs font-medium transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
         >
-          <PlusCircle className="w-3.5 h-3.5" />
-          <span>New Scan</span>
+          <Plus className="w-3.5 h-3.5" />
+          <span>New Investigation</span>
         </button>
       </div>
     </header>

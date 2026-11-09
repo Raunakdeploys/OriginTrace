@@ -11,7 +11,8 @@ import {
   ShieldCheck,
   Zap,
   Radio,
-  X
+  X,
+  Flame
 } from 'lucide-react';
 
 export const Sidebar = ({ 
@@ -24,9 +25,10 @@ export const Sidebar = ({
   const navItems = [
     { id: 'overview', label: 'Overview', icon: Activity, tag: null },
     { id: 'investigate', label: 'Investigate', icon: Search, tag: 'Live' },
+    { id: 'threat_lab', label: 'Adversarial Threat Lab', icon: Flame, tag: 'Red Team' },
     { id: 'identity_graph', label: 'Identity Graph', icon: Network, tag: null },
     { id: 'trust_drift', label: 'Trust Drift', icon: GitCompare, tag: null },
-    { id: 'emudhra', label: 'eMudhra Audit', icon: Award, tag: '3 cases' },
+    { id: 'emudhra', label: 'eMudhra Audit', icon: Award, tag: '4 cases' },
     { id: 'evidence_vault', label: 'Evidence Vault', icon: FileCheck2, tag: null },
     { id: 'history', label: 'History Archive', icon: History, tag: historyCount > 0 ? String(historyCount) : null },
     { id: 'settings', label: 'Settings & Telemetry', icon: Settings, tag: null }

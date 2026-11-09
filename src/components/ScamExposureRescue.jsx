@@ -349,56 +349,56 @@ export const PLAYBOOKS = {
  * Compact Homepage Banner / Card Component
  * Placed beside or immediately below URL checker on desktop, and directly below on mobile.
  */
+/**
+ * Compact Homepage Banner / Card Component
+ * Placed beside or immediately below URL checker on desktop, and directly below on mobile.
+ */
 export const ScamExposureRescueCard = ({ onOpenRescue, currentReport = null }) => {
   return (
-    <div className="p-5 sm:p-6 rounded-3xl glass-panel relative overflow-hidden border border-white/[0.08] hover:border-cyan-500/30 transition-all flex flex-col justify-between group">
-      {/* Subtle Glow Accent */}
-      <div className="absolute top-0 right-0 w-48 h-48 bg-rose-500/5 rounded-full blur-2xl pointer-events-none group-hover:bg-rose-500/10 transition-colors" />
-
-      <div className="space-y-3 relative z-10">
+    <div className="p-6 rounded-2xl panel border border-white/[0.08] flex flex-col justify-between">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
-              <ShieldAlert className="w-4 h-4" />
-            </span>
-            <span className="text-[11px] font-mono uppercase tracking-wider text-rose-300 font-semibold">
+            <ShieldAlert className="w-4 h-4 text-rose-400" />
+            <span className="text-xs font-mono uppercase tracking-wider text-rose-400 font-semibold">
               Scam Exposure Rescue
             </span>
           </div>
-          <span className="text-[10px] font-mono text-slate-400 px-2 py-0.5 rounded-full bg-white/[0.04]">
-            Action Plan
+          <span className="text-xs font-mono text-slate-500">
+            Guided Triage
           </span>
         </div>
 
         <div>
-          <h3 className="text-base sm:text-lg font-bold text-white tracking-tight leading-snug">
+          <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight leading-snug">
             Already clicked or shared something?
           </h3>
-          <p className="text-xs text-slate-400 mt-1 leading-relaxed">
+          <p className="text-xs text-slate-400 mt-1 leading-relaxed font-sans">
             Get an immediate, safe next-step action plan. You do not need to share passwords, OTPs, or card numbers.
           </p>
         </div>
 
         {currentReport && currentReport.classification !== 'LOW RISK' && (
-          <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 flex items-center gap-2 text-[11px] text-rose-200">
+          <div className="p-3 rounded-lg bg-rose-950/20 border border-rose-500/30 flex items-center gap-2 text-xs text-rose-200 font-mono">
             <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
             <span className="truncate">
-              Context: Active scan flagged <strong>{currentReport.target?.display_value || currentReport.target}</strong> as {currentReport.classification}.
+              Active scan flagged <strong>{currentReport.target?.display_value || currentReport.target}</strong> as {currentReport.classification}.
             </span>
           </div>
         )}
       </div>
 
-      <div className="pt-4 relative z-10">
+      <div className="pt-5">
         <button
+          type="button"
           onClick={onOpenRescue}
-          className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-rose-500/20 to-amber-500/20 hover:from-rose-500/30 hover:to-amber-500/30 text-rose-200 border border-rose-500/30 font-medium text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer shadow-[0_0_15px_rgba(244,63,94,0.1)] hover:shadow-[0_0_20px_rgba(244,63,94,0.2)]"
+          className="w-full py-2.5 px-4 rounded-lg bg-white hover:bg-slate-200 text-slate-950 font-medium text-xs sm:text-sm flex items-center justify-center gap-2 transition-colors cursor-pointer"
         >
           <span>Check My Exposure</span>
-          <ArrowRight className="w-4 h-4 text-rose-300" />
+          <ArrowRight className="w-4 h-4 text-slate-950" />
         </button>
-        <div className="text-[10px] text-slate-500 text-center mt-2 font-mono">
-          Privacy-First • 100% Client-Side • Zero Credential Logging
+        <div className="text-xs text-slate-500 text-center mt-2 font-mono">
+          Privacy-First · 100% Client-Side · Zero Credential Logging
         </div>
       </div>
     </div>
@@ -439,28 +439,24 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-fade-in overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm overflow-y-auto">
       <div 
-        className="w-full max-w-3xl rounded-3xl glass-panel border border-white/[0.12] bg-[#0c121e]/95 text-slate-100 shadow-2xl overflow-hidden my-8"
+        className="w-full max-w-3xl rounded-2xl panel border border-white/[0.1] bg-[#0e1117] text-slate-100 shadow-2xl overflow-hidden my-8"
         role="dialog"
         aria-modal="true"
         aria-labelledby="rescue-title"
       >
         {/* Modal Header */}
-        <div className="p-5 sm:p-6 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
+        <div className="p-5 sm:p-6 border-b border-white/[0.07] flex items-center justify-between bg-black/20">
           <div className="flex items-center gap-3">
-            <span className="p-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
-              <ShieldAlert className="w-5 h-5" />
-            </span>
+            <ShieldAlert className="w-5 h-5 text-rose-400" />
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono uppercase tracking-wider text-rose-400 font-bold">
-                  Rapid Incident Triage
-                </span>
-                <span className="text-slate-600">•</span>
-                <span className="text-[10px] font-mono text-slate-400">Step {step} of 2</span>
+              <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
+                <span className="uppercase text-rose-400 font-semibold">Incident Triage</span>
+                <span aria-hidden="true">·</span>
+                <span>Step {step} of 2</span>
               </div>
-              <h2 id="rescue-title" className="text-lg sm:text-xl font-bold text-white tracking-tight">
+              <h2 id="rescue-title" className="text-lg sm:text-xl font-semibold text-white tracking-tight">
                 Scam Exposure Rescue
               </h2>
             </div>
@@ -469,8 +465,9 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
           <div className="flex items-center gap-2">
             {step === 2 && (
               <button
+                type="button"
                 onClick={handleReset}
-                className="p-2 rounded-xl glass-subtle hover:bg-white/[0.08] text-slate-400 hover:text-white transition-colors cursor-pointer text-xs flex items-center gap-1.5"
+                className="p-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-400 hover:text-white transition-colors cursor-pointer text-xs flex items-center gap-1.5"
                 title="Restart Triage"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
@@ -478,8 +475,9 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
               </button>
             )}
             <button
+              type="button"
               onClick={onClose}
-              className="p-2 rounded-xl glass-subtle hover:bg-white/[0.08] text-slate-400 hover:text-white transition-colors cursor-pointer"
+              className="p-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-slate-400 hover:text-white transition-colors cursor-pointer"
               aria-label="Close modal"
             >
               <X className="w-5 h-5" />
@@ -493,20 +491,20 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
           {step === 1 && (
             <div className="space-y-5">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-white">
+                <h3 className="text-base font-semibold text-white">
                   What happened during your interaction?
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-400 mt-1">
+                <p className="text-xs sm:text-sm text-slate-400 mt-1 font-sans">
                   Select the closest option. You will never be asked to share passwords, PINs, or card numbers.
                 </p>
               </div>
 
               {/* Context Callout if current investigation exists */}
               {currentReport && (
-                <div className="p-3.5 rounded-2xl bg-cyan-500/[0.07] border border-cyan-500/20 text-xs text-cyan-200/90 flex items-start gap-3">
-                  <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-lg bg-black/40 border border-white/[0.08] text-xs text-slate-300 flex items-start gap-3">
+                  <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <div>
-                    <span className="font-semibold text-white">Active Case Linked: </span>
+                    <span className="font-medium text-white">Active Case Linked: </span>
                     <span>
                       Evaluating against report for <strong>{currentReport.target?.display_value || currentReport.target}</strong> ({currentReport.classification}).
                     </span>
@@ -521,36 +519,30 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
                   return (
                     <button
                       key={opt.id}
+                      type="button"
                       onClick={() => setSelectedExposure(opt.id)}
-                      className={`p-4 rounded-2xl text-left transition-all border cursor-pointer flex flex-col justify-between ${
+                      className={`p-4 rounded-xl text-left transition-colors border cursor-pointer flex flex-col justify-between ${
                         isSelected
-                          ? 'bg-cyan-500/15 border-cyan-400/50 shadow-[0_0_20px_rgba(6,182,212,0.15)] ring-1 ring-cyan-400/40'
-                          : 'bg-white/[0.03] hover:bg-white/[0.06] border-white/[0.06] text-slate-300'
+                          ? 'bg-white/[0.08] border-white/30 text-white'
+                          : 'bg-black/30 hover:bg-white/[0.04] border-white/[0.06] text-slate-300'
                       }`}
                     >
                       <div className="flex items-start justify-between mb-2">
-                        <span className={`p-2 rounded-xl ${
-                          opt.severity === 'CRITICAL' ? 'bg-rose-500/10 text-rose-400' :
-                          opt.severity === 'HIGH' ? 'bg-amber-500/10 text-amber-400' :
-                          opt.severity === 'MEDIUM' ? 'bg-slate-500/10 text-slate-300' :
-                          'bg-emerald-500/10 text-emerald-400'
-                        }`}>
-                          <Icon className="w-4 h-4" />
-                        </span>
-                        <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full font-bold ${
-                          opt.severity === 'CRITICAL' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' :
-                          opt.severity === 'HIGH' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
-                          opt.severity === 'MEDIUM' ? 'bg-slate-500/20 text-slate-300 border border-slate-500/30' :
-                          'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        <Icon className="w-4 h-4 text-slate-400" />
+                        <span className={`text-xs font-mono font-medium uppercase ${
+                          opt.severity === 'CRITICAL' ? 'text-rose-400' :
+                          opt.severity === 'HIGH' ? 'text-orange-400' :
+                          opt.severity === 'MEDIUM' ? 'text-slate-400' :
+                          'text-emerald-400'
                         }`}>
                           {opt.severity}
                         </span>
                       </div>
                       <div>
-                        <div className="text-xs sm:text-sm font-bold text-white mb-0.5">
+                        <div className="text-xs sm:text-sm font-semibold text-white mb-0.5">
                           {opt.title}
                         </div>
-                        <div className="text-[11px] text-slate-400 leading-snug">
+                        <div className="text-xs text-slate-400 leading-snug font-sans">
                           {opt.subtitle}
                         </div>
                       </div>
@@ -561,8 +553,8 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
 
               {/* Account Category selection (optional refinement) */}
               {selectedExposure && selectedExposure !== 'link_only' && (
-                <div className="space-y-2 pt-2 border-t border-white/[0.08]">
-                  <label className="text-xs font-semibold text-slate-300">
+                <div className="space-y-2 pt-3 border-t border-white/[0.07]">
+                  <label className="text-xs font-medium text-slate-300">
                     What type of service was involved? (Optional)
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -571,10 +563,10 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
                         key={cat.id}
                         type="button"
                         onClick={() => setSelectedCategory(cat.id)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer ${
+                        className={`px-3 py-1.5 rounded-md text-xs font-mono transition-colors cursor-pointer ${
                           selectedCategory === cat.id
-                            ? 'bg-cyan-500 text-slate-950 font-bold shadow-[0_0_12px_rgba(6,182,212,0.25)]'
-                            : 'glass-subtle hover:bg-white/[0.08] text-slate-300 border border-white/[0.06]'
+                            ? 'bg-white text-slate-950 font-medium'
+                            : 'bg-black/30 hover:bg-white/[0.06] text-slate-400 border border-white/[0.06]'
                         }`}
                       >
                         {cat.label}
@@ -586,9 +578,10 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
 
               <div className="pt-4 flex justify-end">
                 <button
+                  type="button"
                   disabled={!selectedExposure}
                   onClick={() => setStep(2)}
-                  className="px-6 py-3 rounded-2xl bg-cyan-500 hover:bg-cyan-400 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-mono font-bold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(6,182,212,0.2)]"
+                  className="px-5 py-2.5 rounded-lg bg-white hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-950 font-medium text-xs sm:text-sm transition-colors flex items-center gap-2 cursor-pointer"
                 >
                   <span>Generate Action Plan</span>
                   <ArrowRight className="w-4 h-4" />
@@ -601,7 +594,7 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
           {step === 2 && currentPlaybook && (
             <div className="space-y-6">
               {/* Urgency Alert Header */}
-              <div className="p-4 sm:p-5 rounded-2xl border border-rose-500/30 bg-rose-500/[0.05] space-y-2">
+              <div className="p-4 sm:p-5 rounded-xl border border-rose-500/30 bg-rose-950/15 space-y-1.5">
                 <div className="flex items-center gap-2 text-rose-400 font-mono text-xs font-bold uppercase tracking-wider">
                   <ShieldAlert className="w-4 h-4" />
                   <span>{currentPlaybook.urgency}</span>
@@ -613,11 +606,11 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
 
               {/* Ordered Checklist of Urgent Steps */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+                <div className="flex items-center justify-between pb-2 border-b border-white/[0.07]">
                   <h4 className="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">
                     Step-by-Step Response Protocol
                   </h4>
-                  <span className="text-[11px] font-mono text-cyan-400">
+                  <span className="text-xs font-mono text-slate-500 tabular-nums">
                     {currentPlaybook.steps.length} Actions
                   </span>
                 </div>
@@ -626,18 +619,18 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
                   {currentPlaybook.steps.map((st) => (
                     <div 
                       key={st.order}
-                      className="p-4 rounded-2xl bg-white/[0.03] border border-white/[0.06] space-y-2"
+                      className="p-4 rounded-xl bg-black/30 border border-white/[0.06] space-y-1.5"
                     >
                       <div className="flex items-start gap-3">
-                        <span className="w-6 h-6 rounded-full bg-cyan-500/20 text-cyan-300 font-mono font-bold text-xs flex items-center justify-center shrink-0 border border-cyan-500/30">
+                        <span className="w-5 h-5 rounded bg-white/5 border border-white/10 text-slate-300 font-mono font-medium text-xs flex items-center justify-center shrink-0 mt-0.5">
                           {st.order}
                         </span>
                         <div className="space-y-1">
-                          <div className="text-xs sm:text-sm font-bold text-white leading-snug">
+                          <div className="text-xs sm:text-sm font-semibold text-white leading-snug">
                             {st.title}
                           </div>
-                          <div className="text-[11px] sm:text-xs text-slate-400 leading-relaxed">
-                            <span className="font-semibold text-slate-300">Why: </span>
+                          <div className="text-xs text-slate-400 leading-relaxed font-sans">
+                            <span className="font-medium text-slate-300">Why: </span>
                             {st.reason}
                           </div>
                         </div>
@@ -649,12 +642,12 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
 
               {/* Investigation Context Correlation (if available) */}
               {currentReport && (
-                <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] space-y-2 text-xs">
-                  <div className="font-bold text-cyan-300 flex items-center gap-1.5 font-mono text-[11px] uppercase">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
+                <div className="p-4 rounded-xl bg-black/30 border border-white/[0.06] space-y-1.5 text-xs font-mono">
+                  <div className="font-semibold text-white flex items-center gap-1.5 uppercase text-xs">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                     <span>Technical Correlation with Current Scan</span>
                   </div>
-                  <div className="text-slate-300 leading-relaxed text-[11px]">
+                  <div className="text-slate-300 leading-relaxed text-xs font-sans">
                     Target evaluated: <span className="font-mono text-white">{currentReport.target?.display_value || currentReport.target}</span>. 
                     {currentReport.classification === 'CONFIRMED MALICIOUS' || currentReport.classification === 'HIGH RISK' ? (
                       <span className="text-rose-300 ml-1">
@@ -670,18 +663,18 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
               )}
 
               {/* Why These Steps Explanation */}
-              <div className="p-4 rounded-2xl glass-subtle space-y-1 text-xs">
-                <div className="font-semibold text-slate-300 flex items-center gap-1.5">
-                  <HelpCircle className="w-3.5 h-3.5 text-cyan-400" />
+              <div className="p-4 rounded-xl bg-black/20 border border-white/[0.06] space-y-1 text-xs">
+                <div className="font-medium text-slate-300 flex items-center gap-1.5">
+                  <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
                   <span>Why these specific steps?</span>
                 </div>
-                <p className="text-slate-400 text-[11px] leading-relaxed">
+                <p className="text-slate-400 text-xs leading-relaxed font-sans">
                   {currentPlaybook.why}
                 </p>
               </div>
 
               {/* Disclaimer */}
-              <p className="text-[10px] text-slate-500 leading-normal font-sans border-t border-white/[0.06] pt-3">
+              <p className="text-xs text-slate-500 leading-normal font-sans border-t border-white/[0.07] pt-3">
                 {currentPlaybook.disclaimer}
               </p>
 
@@ -690,7 +683,7 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="w-full sm:w-auto px-4 py-2.5 rounded-xl glass-subtle hover:bg-white/[0.08] text-xs font-mono text-slate-300 transition-colors cursor-pointer"
+                  className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-xs font-mono text-slate-300 transition-colors cursor-pointer"
                 >
                   Change Selection
                 </button>
@@ -699,7 +692,7 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
                   <button
                     type="button"
                     onClick={handleCopyPlan}
-                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-xs font-mono text-slate-200 transition-colors flex items-center justify-center gap-2 cursor-pointer border border-white/[0.1]"
+                    className="flex-1 sm:flex-initial px-4 py-2.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.1] text-xs font-mono text-slate-200 transition-colors flex items-center justify-center gap-2 cursor-pointer border border-white/[0.08]"
                   >
                     {copied ? (
                       <>
@@ -717,7 +710,7 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
                   <button
                     type="button"
                     onClick={onClose}
-                    className="flex-1 sm:flex-initial px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-mono font-bold text-xs transition-colors cursor-pointer"
+                    className="flex-1 sm:flex-initial px-5 py-2.5 rounded-lg bg-white hover:bg-slate-200 text-slate-950 font-medium text-xs transition-colors cursor-pointer"
                   >
                     Done
                   </button>
@@ -730,3 +723,4 @@ export const ScamExposureRescueModal = ({ isOpen, onClose, currentReport = null 
     </div>
   );
 };
+

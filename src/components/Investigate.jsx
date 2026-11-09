@@ -18,9 +18,13 @@ import {
   RefreshCw, 
   FileCheck2, 
   Activity, 
-  Zap 
+  Zap,
+  Volume2,
+  VolumeX,
+  Award
 } from 'lucide-react';
 import { ScamExposureRescueModal } from './ScamExposureRescue.jsx';
+import { CertifiedDossierModal } from './CertifiedDossierModal.jsx';
 
 export const Investigate = ({
   initialTarget = '',
@@ -37,6 +41,30 @@ export const Investigate = ({
   const [copiedHash, setCopiedHash] = useState(false);
   const [copiedIndicator, setCopiedIndicator] = useState(null);
   const [isRescueOpen, setIsRescueOpen] = useState(false);
+  const [isDossierOpen, setIsDossierOpen] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+
+  const handlePlaySpeech = () => {
+    if (!('speechSynthesis' in window) || !currentReport) return;
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const cleanTarget = String(currentReport.target?.display_value || currentReport.target || '').replace(/https?:\/\//, '');
+    const speechText = `ORIGINTRACE Audio Debrief for ${cleanTarget}. ` +
+      `Classification: ${currentReport.classification}. Risk score: ${currentReport.risk_score} out of 100. ` +
+      `Summary findings: ${currentReport.summary}. ` +
+      `Report sealed with cryptographic SHA-256 fingerprint on Ethereum registry contract.`;
+    const utterance = new SpeechSynthesisUtterance(speechText);
+    utterance.rate = 1.05;
+    utterance.pitch = 0.95;
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    setIsSpeaking(true);
+    window.speechSynthesis.speak(utterance);
+  };
 
   const handleLoadPreset = (target, type) => {
     setTargetType(type);
@@ -333,18 +361,50 @@ export const Investigate = ({
               </div>
             </div>
 
-            {/* Prompt for Scam Exposure Rescue */}
+            {/* Executive SOC Action Bar */}
             <div className="pt-2 flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06]">
-              <span className="text-xs text-slate-400">
-                Already clicked or shared credentials with this target?
-              </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePlaySpeech}
+                  title="Listen to synthesized audio briefing of findings"
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-mono flex items-center gap-2 transition-all cursor-pointer border ${
+                    isSpeaking 
+                      ? 'bg-amber-500/20 border-amber-500 text-amber-300 shadow-[0_0_15px_rgba(245,158,11,0.3)] animate-pulse' 
+                      : 'bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border-cyan-500/25'
+                  }`}
+                >
+                  {isSpeaking ? (
+                    <>
+                      <VolumeX className="w-3.5 h-3.5 text-amber-400 animate-spin" />
+                      <span>Stop Audio Debrief</span>
+                    </>
+                  ) : (
+                    <>
+                      <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>Audio SOC Debrief</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsDossierOpen(true)}
+                  title="Generate court-grade forensic certificate with EVM notarization"
+                  className="px-3.5 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/25 text-xs font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+                >
+                  <Award className="w-3.5 h-3.5 text-purple-400" />
+                  <span>Court-Grade Certified Dossier</span>
+                </button>
+              </div>
+
               <button
                 type="button"
                 onClick={() => setIsRescueOpen(true)}
                 className="px-3.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/25 text-xs font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
-                <span>Open Scam Exposure Rescue</span>
+                <span>Scam Exposure Rescue</span>
               </button>
             </div>
           </div>
@@ -497,6 +557,13 @@ export const Investigate = ({
         isOpen={isRescueOpen}
         onClose={() => setIsRescueOpen(false)}
         currentReport={currentReport}
+      />
+
+      {/* Court-Grade Certified Cryptographic Dossier Modal */}
+      <CertifiedDossierModal
+        isOpen={isDossierOpen}
+        onClose={() => setIsDossierOpen(false)}
+        report={currentReport}
       />
     </div>
   );

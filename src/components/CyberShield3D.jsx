@@ -9,6 +9,11 @@ export const CyberShield3D = ({
 }) => {
   const mountRef = useRef(null);
   const [isRotating, setIsRotating] = useState(true);
+  const [activeThreat, setActiveThreat] = useState(threatLevel);
+
+  useEffect(() => {
+    setActiveThreat(threatLevel);
+  }, [threatLevel]);
 
   useEffect(() => {
     const container = mountRef.current;
@@ -50,10 +55,10 @@ export const CyberShield3D = ({
     // Color theme based on threat level
     let primaryColor = 0x38bdf8; // Sky / Cyan
     let secondaryColor = 0x34d399; // Emerald
-    if (threatLevel === 'HIGH' || threatLevel === 'CRITICAL') {
+    if (activeThreat === 'HIGH' || activeThreat === 'CRITICAL') {
       primaryColor = 0xf43f5e;
       secondaryColor = 0xfbbf24;
-    } else if (threatLevel === 'SUSPICIOUS') {
+    } else if (activeThreat === 'SUSPICIOUS') {
       primaryColor = 0xfbbf24;
       secondaryColor = 0x38bdf8;
     }
@@ -239,7 +244,7 @@ export const CyberShield3D = ({
       particlesGeo.dispose();
       particlesMat.dispose();
     };
-  }, [threatLevel, isRotating]);
+  }, [activeThreat, isRotating]);
 
   return (
     <div className={`relative w-full h-full min-h-[300px] rounded-2xl overflow-hidden glass-panel flex flex-col ${className}`}>
@@ -251,9 +256,15 @@ export const CyberShield3D = ({
             3D Spatial Security Matrix
           </span>
         </div>
-        <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-          <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px]">
-            {threatLevel} RISK
+        <div className="flex items-center gap-2 text-xs font-mono">
+          <span className={`px-2 py-0.5 rounded-full border text-[11px] font-bold ${
+            activeThreat === 'CRITICAL' || activeThreat === 'HIGH'
+              ? 'bg-rose-500/15 text-rose-400 border-rose-500/30 shadow-[0_0_10px_rgba(244,63,94,0.3)]'
+              : activeThreat === 'SUSPICIOUS'
+              ? 'bg-amber-500/15 text-amber-400 border-amber-500/30 shadow-[0_0_10px_rgba(245,158,11,0.3)]'
+              : 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+          }`}>
+            {activeThreat} RISK
           </span>
         </div>
       </div>
@@ -261,20 +272,57 @@ export const CyberShield3D = ({
       {/* WebGL Canvas */}
       <div ref={mountRef} className="w-full flex-1 relative cursor-grab active:cursor-grabbing" />
 
-      {/* Minimalist Floating Glass Control Dock */}
-      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20">
-        <div className="px-3 py-1.5 rounded-full glass-panel flex items-center gap-3 text-xs font-mono shadow-lg">
-          <button
-            onClick={() => setIsRotating(!isRotating)}
-            className="flex items-center gap-1.5 text-slate-300 hover:text-cyan-400 transition-colors cursor-pointer"
-          >
-            <RefreshCw className={`w-3 h-3 ${isRotating ? 'animate-spin' : ''}`} style={{ animationDuration: '6s' }} />
-            <span>{isRotating ? 'Active' : 'Paused'}</span>
-          </button>
-          <span className="text-slate-600">·</span>
-          <div className="flex items-center gap-1.5 text-slate-400 text-[11px]">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>{activeNodesCount} Nodes Tracked</span>
+      {/* Interactive Control Dock for Judges */}
+      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 w-[92%] max-w-[460px]">
+        <div className="px-3 py-2 rounded-2xl glass-panel flex flex-wrap items-center justify-between gap-2 text-xs font-mono shadow-2xl border border-white/10">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsRotating(!isRotating)}
+              className="flex items-center gap-1.5 text-slate-300 hover:text-cyan-400 transition-colors cursor-pointer"
+              title="Pause or resume auto-rotation"
+            >
+              <RefreshCw className={`w-3 h-3 ${isRotating ? 'animate-spin' : ''}`} style={{ animationDuration: '6s' }} />
+              <span>{isRotating ? 'Auto-Orbit' : 'Frozen'}</span>
+            </button>
+            <span className="text-slate-600">·</span>
+            <span className="text-slate-400 text-[10px] hidden sm:inline">{activeNodesCount} Nodes</span>
+          </div>
+
+          {/* Interactive Threat Level Simulator */}
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setActiveThreat('LOW')}
+              className={`px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-colors ${
+                activeThreat === 'LOW'
+                  ? 'bg-emerald-500 text-slate-950 shadow-sm'
+                  : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+              }`}
+            >
+              Clean
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveThreat('SUSPICIOUS')}
+              className={`px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-colors ${
+                activeThreat === 'SUSPICIOUS'
+                  ? 'bg-amber-500 text-slate-950 shadow-sm'
+                  : 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'
+              }`}
+            >
+              Suspicious
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveThreat('CRITICAL')}
+              className={`px-2 py-0.5 rounded text-[10px] font-bold cursor-pointer transition-colors ${
+                activeThreat === 'CRITICAL' || activeThreat === 'HIGH'
+                  ? 'bg-rose-500 text-white shadow-sm'
+                  : 'bg-rose-500/10 text-rose-400 hover:bg-rose-500/20'
+              }`}
+            >
+              Critical
+            </button>
           </div>
         </div>
       </div>

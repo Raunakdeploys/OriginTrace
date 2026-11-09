@@ -18,7 +18,10 @@ import {
   Mail,
   HelpCircle,
   Cpu,
-  FileCheck2
+  FileCheck2,
+  Flame,
+  QrCode,
+  Award
 } from 'lucide-react';
 import { CyberShield3D } from './CyberShield3D.jsx';
 import { ScamExposureRescueCard, ScamExposureRescueModal } from './ScamExposureRescue.jsx';
@@ -343,6 +346,38 @@ export const Overview = ({
           >
             <span>Open Investigation Workspace</span>
             <ArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      </div>
+
+      {/* Adversarial Threat Lab Spotlight (Hackathon Red Team Showcase) */}
+      <div className="p-6 rounded-3xl glass-panel border border-rose-500/20 bg-gradient-to-r from-rose-950/20 via-purple-950/15 to-transparent relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="space-y-2 max-w-2xl">
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-400 border border-rose-500/30 text-[10px] font-mono font-bold uppercase tracking-wider flex items-center gap-1">
+              <Flame className="w-3 h-3 text-rose-400" />
+              <span>Red Team Threat Lab</span>
+            </span>
+            <span className="text-xs font-mono text-slate-400">·</span>
+            <span className="text-xs font-mono text-purple-300">Quishing · Homoglyphs · AiTM 2FA Bypass</span>
+          </div>
+          <h2 className="text-lg sm:text-xl font-extrabold text-white font-heading">
+            Live Adversary Simulation & Optical Payload Dissection
+          </h2>
+          <p className="text-xs text-slate-300 leading-relaxed">
+            Test real-world modern attack vectors that bypass traditional email filters: scan zero-day QR quishing codes, inspect Unicode Cyrillic punycode confusable domains, and dissect Evilginx reverse-proxy session cookie exfiltration.
+          </p>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 shrink-0 w-full md:w-auto">
+          <button
+            type="button"
+            onClick={() => setActiveView('threat_lab')}
+            className="w-full sm:w-auto px-5 py-3 rounded-2xl bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-400 hover:to-purple-500 text-white font-mono font-bold text-xs transition-all shadow-[0_0_20px_rgba(244,63,94,0.3)] flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <Flame className="w-4 h-4 text-white" />
+            <span>Launch Threat Lab</span>
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>

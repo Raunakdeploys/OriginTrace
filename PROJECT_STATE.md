@@ -75,10 +75,14 @@
 - **Differentiator A (Digital Identity Graph):** Evidence-backed graph canvas linking Brand, Domain, DNS, IP, and TLS with provenance metadata.
 - **Differentiator B (Trust Drift):** Real snapshot comparisons; displays `"No historical baseline available — Trust Drift cannot yet be assessed."` on initial scans.
 - **Differentiator C (Verifiable Threat Evidence):** Deterministic SHA-256 canonical JSON report fingerprinting with on-chain EVM contract verification.
+- **Differentiator D (Adversarial Threat Lab - Hackathon Top 5%):** Interactive red-team workbench simulating QR Quishing payloads, Unicode Cyrillic punycode confusable domains, and Evilginx AiTM reverse-proxy session hijack topology.
+- **Differentiator E (Court-Grade Certified Forensic Dossier):** Official printable certificate format with SHA-256 verification seal, EVM block `#19842103` notarization, chain-of-custody metadata, and JSON proof export.
+- **Differentiator F (Audio SOC Debrief):** Instant voice briefing synthesized via client-side Web Speech API with 0 latency and no external cloud credentials required.
+- **Differentiator G (Interactive 3D Threat Matrix):** Three.js spatial shield with interactive threat state toggling (Clean / Suspicious / Critical) for live judge demonstrations.
 
 ---
 
 ## 4. Known Risks & Next Actions
 
 - **Known Risks:** Public testnets may experience faucet rate-limiting or RPC latency; local simulated EVM contract guarantees 100% reproducible zero-failure testing.
-- **Next Action:** Await user prompts for targeted enhancements, additional domain presets, or specific live test investigations.
+- **Next Action:** Ready for live hackathon judge presentation, interactive red-team demo, and courtroom-grade dossier export.
