@@ -130,8 +130,14 @@ export const TrustDrift = ({
             ))}
           </div>
         ) : (
-          <div className="p-8 text-center text-slate-500 text-xs font-mono">
-            No unexpected structural mutations detected between snapshots.
+          <div className="p-8 text-center space-y-2 rounded-2xl glass-subtle border border-dashed border-white/[0.08]">
+            <AlertTriangle className="w-6 h-6 text-amber-400 mx-auto" />
+            <div className="text-sm font-semibold text-white">
+              No historical baseline available — Trust Drift cannot yet be assessed.
+            </div>
+            <p className="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+              Trust Drift compares observable differences across distinct timestamped snapshots. Run a second investigation on this target at a later point in time to establish differential telemetry.
+            </p>
           </div>
         )}
       </div>

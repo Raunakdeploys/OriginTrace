@@ -314,7 +314,38 @@ export const Investigate = ({
             <p className="text-sm text-slate-300 leading-relaxed">
               {currentReport.summary}
             </p>
+
+            {/* Scope & Truthfulness Notice (Mandatory Blueprint Principle) */}
+            <div className="p-3.5 rounded-2xl glass-subtle border border-cyan-500/20 text-xs text-slate-300 flex items-start gap-3">
+              <ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+              <div className="space-y-0.5">
+                <div className="font-semibold text-white flex items-center gap-2">
+                  <span>Scope & Assurance Policy</span>
+                  <span className="text-[10px] font-mono px-2 py-0.2 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                    Confidence: {currentReport.confidence || 'HIGH'}
+                  </span>
+                </div>
+                <p className="text-slate-400 leading-relaxed text-[11px]">
+                  A <span className="text-emerald-400 font-semibold">LOW RISK</span> finding signifies absence of malicious indicators within completed checks only—it does not constitute guaranteed safety. A valid TLS certificate or accredited CA does not prove a site is legitimate.
+                </p>
+              </div>
+            </div>
           </div>
+
+          {/* Limitations Card (if any recorded) */}
+          {currentReport.limitations && currentReport.limitations.length > 0 && (
+            <div className="p-4 rounded-2xl glass-panel border border-amber-500/20 bg-amber-500/[0.02] space-y-2">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold text-amber-400 uppercase tracking-wider">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                <span>Investigation Scope Limitations</span>
+              </div>
+              <ul className="list-disc list-inside text-xs text-slate-400 space-y-1">
+                {currentReport.limitations.map((lim, idx) => (
+                  <li key={idx} className="leading-relaxed">{lim}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
           {/* Technical Checks Card */}
           <div className="p-6 rounded-3xl glass-panel space-y-4">
