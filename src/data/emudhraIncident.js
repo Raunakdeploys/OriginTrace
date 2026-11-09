@@ -1,26 +1,8 @@
 /**
  * ORIGINTRACE — Curated eMudhra Certificate Authority Incident Intelligence
  * Real-world security case study, audit findings, and forensic timeline (2024–2025).
+ * Pure JavaScript module.
  */
-
-export interface EMudhraIncidentRecord {
-  id: string;
-  incident_title: string;
-  disclosure_date: string;
-  authority: string;
-  severity: 'critical' | 'high' | 'medium';
-  summary: string;
-  technical_breakdown: string;
-  affected_sub_cas: string[];
-  auditing_bodies: string[];
-  bugzilla_references: string[];
-  remediation_actions: string[];
-  indicators: {
-    type: 'root_sha256' | 'intermediate_cn' | 'serial_range' | 'domain_pattern';
-    value: string;
-    description: string;
-  }[];
-}
 
 export const EMUDHRA_AUDIT_REPORT = {
   ca_name: "eMudhra Consumer Services Ltd. (eMudhra CA)",
@@ -41,7 +23,7 @@ export const EMUDHRA_AUDIT_REPORT = {
       incident_title: "Delayed Revocation of Compromised Intermediate Private Keys",
       disclosure_date: "2024-04-18",
       authority: "Mozilla Bugzilla #1892110",
-      severity: "critical" as const,
+      severity: "critical",
       summary: "Failure to revoke intermediate cross-signed certificates within the mandatory 24-hour window following notification of key compromise risk.",
       technical_breakdown: "Under RFC 5280 and CA/Browser Forum section 4.9.1.1, CAs must revoke subscriber certificates within 24h for key compromise and 7 days for general misissuance. eMudhra experienced internal ticketing triage latency resulting in an 84-hour revocation delay.",
       affected_sub_cas: [
@@ -57,12 +39,12 @@ export const EMUDHRA_AUDIT_REPORT = {
       ],
       indicators: [
         {
-          type: "root_sha256" as const,
+          type: "root_sha256",
           value: "7A446DB820B11D79F128E6EB3562635B1EF0F352E496C4E1A9D490F16C5A2C49",
           description: "eMudhra Root CA - 2022 G2 (Primary RSA 4096 Root)"
         },
         {
-          type: "intermediate_cn" as const,
+          type: "intermediate_cn",
           value: "eMudhra Premium TLS Sub CA - G1",
           description: "Subordinate CA flagged in audit for unvalidated SAN expansion"
         }
@@ -73,7 +55,7 @@ export const EMUDHRA_AUDIT_REPORT = {
       incident_title: "CAA Record Validation Bypass During Automated Renewals",
       disclosure_date: "2024-08-09",
       authority: "CA/Browser Forum Compliance Notice",
-      severity: "high" as const,
+      severity: "high",
       summary: "Automated ACME-like renewal endpoint cached CAA record lookups beyond the permitted RFC 8659 8-hour window.",
       technical_breakdown: "CAA (Certification Authority Authorization) checks ensure domain owners permit specific CAs to issue certs. eMudhra's renewal microservice re-used DNS query caches up to 72 hours, failing to respect domain owners' change to 'issue none' or third-party CA pinning.",
       affected_sub_cas: ["eMudhra Standard TLS Server CA"],
@@ -85,7 +67,7 @@ export const EMUDHRA_AUDIT_REPORT = {
       ],
       indicators: [
         {
-          type: "domain_pattern" as const,
+          type: "domain_pattern",
           value: "caa.emudhra-validation.com",
           description: "Validation probe resolver host"
         }
@@ -96,7 +78,7 @@ export const EMUDHRA_AUDIT_REPORT = {
       incident_title: "Multi-Perspective Issuance Verification Non-Compliance",
       disclosure_date: "2025-01-14",
       authority: "Google Chrome Root Program Action",
-      severity: "high" as const,
+      severity: "high",
       summary: "Inadequate multi-vantage point BGP route anomaly checks during ACME HTTP-01 challenge validations.",
       technical_breakdown: "To mitigate BGP hijacking attacks against automated domain validation, browsers mandate checking validation tokens from at least 3 geographically distinct Autonomous Systems. eMudhra failed validation on 2 internal proxy nodes during an AWS network partition.",
       affected_sub_cas: ["eMudhra Multi-Domain TLS CA 2023"],
@@ -108,7 +90,7 @@ export const EMUDHRA_AUDIT_REPORT = {
       ],
       indicators: [
         {
-          type: "serial_range" as const,
+          type: "serial_range",
           value: "0x19AF0000000000000000 - 0x19AFFFFFFFFFFFFFFFFF",
           description: "Serial range scrutinized for vantage point validation"
         }

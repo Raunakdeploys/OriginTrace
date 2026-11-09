@@ -1,6 +1,5 @@
-import { UnifiedInvestigationResult } from '../types/investigation';
-
-export const SAMPLE_INVESTIGATIONS: UnifiedInvestigationResult[] = [
+// ORIGINTRACE — Curated Sample Forensic Investigations (Pure JS)
+export const SAMPLE_INVESTIGATIONS = [
   {
     investigation_id: "ORIGIN-2025-CHASE-0941",
     target: "https://chase-security-verify.net/auth/login",
