@@ -1,4 +1,5 @@
-import express, { Request, Response } from 'express';
+import express from 'express';
+import type { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import tls from 'tls';
@@ -7,7 +8,7 @@ import crypto from 'crypto';
 import net from 'net';
 import { fileURLToPath } from 'url';
 import { GoogleGenAI } from '@google/genai';
-import { 
+import type { 
   UnifiedInvestigationResult, 
   InvestigationCheck, 
   ExtractedIndicator, 
@@ -25,7 +26,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 const isProduction = process.env.NODE_ENV === 'production';
 
 app.use(express.json({ limit: '10mb' }));
@@ -515,7 +516,7 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // URL & Website Investigation
 app.post('/api/investigate/url', async (req: Request, res: Response) => {
-  const { target } = req.body;
+  const target = req.body.target || req.body.url || req.body.domain;
   if (!target || typeof target !== 'string') {
     return res.status(400).json({ error: 'Target URL or domain is required.' });
   }
@@ -1086,7 +1087,8 @@ app.post('/api/investigate/url', async (req: Request, res: Response) => {
 
 // AI Scam, Email & Message Investigation
 app.post('/api/investigate/message', async (req: Request, res: Response) => {
-  const { content, target_type } = req.body;
+  const content = req.body.content || req.body.message || req.body.text || req.body.email;
+  const target_type = req.body.target_type;
   if (!content || typeof content !== 'string') {
     return res.status(400).json({ error: 'Message or email content is required.' });
   }
